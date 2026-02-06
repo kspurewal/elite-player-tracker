@@ -71,6 +71,21 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .subtitle .badge:hover {
+      background: rgba(74, 222, 128, 0.25);
+    }
+
+    .subtitle .badge.active {
+      background: #4ade80;
+      color: #0a0a1a;
+    }
+
+    .subtitle .badge:not(.active) {
+      opacity: 0.6;
     }
 
     .subtitle .week-label {
@@ -448,9 +463,10 @@
   <header>
     <img src="logo.png" alt="EPT Logo" class="header-logo">
     <h1><span>E</span>LITE <span>P</span>LAYER <span>T</span>RACKER</h1>
-    <p>The best NBA players, ranked by EPT Rating. </p>
+    <p id="header-desc">The best NBA players, ranked by EPT Rating.</p>
     <div class="subtitle">
-      <span class="badge">NBA</span>
+      <span class="badge active" id="badge-nba" onclick="switchSport('nba')">NBA</span>
+      <span class="badge" id="badge-mlb" onclick="switchSport('mlb')">MLB</span>
       <span class="week-label" id="week-label">Loading week...</span>
     </div>
   </header>
@@ -477,15 +493,12 @@
   </main>
 
   <script>
-    function formatDateNice(dateStr) {
-      const d = new Date(dateStr + "T00:00:00");
-      return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    }
+    let currentSport = 'nba';
 
     function avg(val, gp) { return gp ? +(val / gp).toFixed(1) : 0; }
 
-    function renderTable(players) {
-      // Ensure per-game and pct fields exist (computed client-side as fallback)
+    // ─── NBA Table ───
+    function renderNBATable(players) {
       players.forEach(p => {
         if (p.ppg == null) p.ppg = avg(p.pts, p.gp);
         if (p.rpg == null) p.rpg = avg(p.reb, p.gp);
@@ -505,311 +518,292 @@
       });
 
       let html = `
-        <table class="player-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Player</th>
-              <th>GP</th>
-              <th>PTS</th>
-              <th>REB</th>
-              <th>AST</th>
-              <th class="hide-mobile">STL</th>
-              <th class="hide-mobile">BLK</th>
-              <th class="hide-mobile">TO</th>
-              <th>EPT Points</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      const colCount = 10;
+        <table class="player-table"><thead><tr>
+          <th>#</th><th>Player</th><th>GP</th><th>PTS</th><th>REB</th><th>AST</th>
+          <th class="hide-mobile">STL</th><th class="hide-mobile">BLK</th><th class="hide-mobile">TO</th><th>EPT Points</th>
+        </tr></thead><tbody>`;
 
       for (let i = 0; i < players.length; i++) {
-        const p = players[i];
-        const rank = i + 1;
-        let rankClass = "";
-        if (rank === 1) rankClass = "rank-1";
-        else if (rank === 2) rankClass = "rank-2";
-        else if (rank === 3) rankClass = "rank-3";
-
+        const p = players[i], rank = i + 1;
+        let rc = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
         html += `
           <tr class="player-row" data-index="${i}">
-            <td class="rank ${rankClass}">${rank}</td>
-            <td>
-              <div class="player-name">${p.name}</div>
-              <div class="player-team">${p.team}</div>
-            </td>
-            <td class="stat-val">${p.gp}</td>
-            <td class="stat-val">${p.pts}</td>
-            <td class="stat-val">${p.reb}</td>
-            <td class="stat-val">${p.ast}</td>
-            <td class="stat-val hide-mobile">${p.stl}</td>
-            <td class="stat-val hide-mobile">${p.blk}</td>
-            <td class="stat-val hide-mobile">${p.tov}</td>
-            <td class="ept-rating">${p.ept}</td>
+            <td class="rank ${rc}">${rank}</td>
+            <td><div class="player-name">${p.name}</div><div class="player-team">${p.team}</div></td>
+            <td class="stat-val">${p.gp}</td><td class="stat-val">${p.pts}</td>
+            <td class="stat-val">${p.reb}</td><td class="stat-val">${p.ast}</td>
+            <td class="stat-val hide-mobile">${p.stl}</td><td class="stat-val hide-mobile">${p.blk}</td>
+            <td class="stat-val hide-mobile">${p.tov}</td><td class="ept-rating">${p.ept}</td>
           </tr>
-          <tr class="detail-row" data-index="${i}">
-            <td colspan="${colCount}">
-              <div class="detail-content">
-                <h4>${p.name} — ${p.team}</h4>
-                <div class="detail-grid">
-                  <div class="detail-item">
-                    <div class="di-label">FG%</div>
-                    <div class="di-value">${p.fgPct}%</div>
-                    <div class="di-sub">${p.fgm}/${p.fga}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">3P%</div>
-                    <div class="di-value">${p.tpPct}%</div>
-                    <div class="di-sub">${p.fg3m}/${p.fg3a}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">FT%</div>
-                    <div class="di-value">${p.ftPct}%</div>
-                    <div class="di-sub">${p.ftm}/${p.fta}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">PPG</div>
-                    <div class="di-value">${p.ppg}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">RPG</div>
-                    <div class="di-value">${p.rpg}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">APG</div>
-                    <div class="di-value">${p.apg}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">SPG</div>
-                    <div class="di-value">${p.spg}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">BPG</div>
-                    <div class="di-value">${p.bpg}</div>
-                  </div>
-                  <div class="detail-item">
-                    <div class="di-label">TOPG</div>
-                    <div class="di-value">${p.topg}</div>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-        `;
+          <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+            <h4>${p.name} — ${p.team}</h4>
+            <div class="detail-grid">
+              <div class="detail-item"><div class="di-label">FG%</div><div class="di-value">${p.fgPct}%</div><div class="di-sub">${p.fgm}/${p.fga}</div></div>
+              <div class="detail-item"><div class="di-label">3P%</div><div class="di-value">${p.tpPct}%</div><div class="di-sub">${p.fg3m}/${p.fg3a}</div></div>
+              <div class="detail-item"><div class="di-label">FT%</div><div class="di-value">${p.ftPct}%</div><div class="di-sub">${p.ftm}/${p.fta}</div></div>
+              <div class="detail-item"><div class="di-label">PPG</div><div class="di-value">${p.ppg}</div></div>
+              <div class="detail-item"><div class="di-label">RPG</div><div class="di-value">${p.rpg}</div></div>
+              <div class="detail-item"><div class="di-label">APG</div><div class="di-value">${p.apg}</div></div>
+              <div class="detail-item"><div class="di-label">SPG</div><div class="di-value">${p.spg}</div></div>
+              <div class="detail-item"><div class="di-label">BPG</div><div class="di-value">${p.bpg}</div></div>
+              <div class="detail-item"><div class="di-label">TOPG</div><div class="di-value">${p.topg}</div></div>
+            </div>
+          </div></td></tr>`;
       }
-
-      html += `</tbody></table>`;
-      return html;
+      return html + `</tbody></table>`;
     }
 
-    // Get NBA season string
+    // ─── MLB Table ───
+    function renderMLBTable(players) {
+      let html = `
+        <table class="player-table"><thead><tr>
+          <th>#</th><th>Player</th><th>G</th><th>H</th><th>HR</th><th>RBI</th>
+          <th class="hide-mobile">SB</th><th class="hide-mobile">AVG</th><th class="hide-mobile">OPS</th><th>EPT Points</th>
+        </tr></thead><tbody>`;
+
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i], rank = i + 1;
+        let rc = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+        html += `
+          <tr class="player-row" data-index="${i}">
+            <td class="rank ${rc}">${rank}</td>
+            <td><div class="player-name">${p.name}</div><div class="player-team">${p.team}</div></td>
+            <td class="stat-val">${p.games}</td><td class="stat-val">${p.hits}</td>
+            <td class="stat-val">${p.hr}</td><td class="stat-val">${p.rbi}</td>
+            <td class="stat-val hide-mobile">${p.sb}</td><td class="stat-val hide-mobile">${p.avg}</td>
+            <td class="stat-val hide-mobile">${p.ops}</td><td class="ept-rating">${p.ept}</td>
+          </tr>
+          <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+            <h4>${p.name} — ${p.team}</h4>
+            <div class="detail-grid">
+              <div class="detail-item"><div class="di-label">AB</div><div class="di-value">${p.ab}</div></div>
+              <div class="detail-item"><div class="di-label">RUNS</div><div class="di-value">${p.runs}</div></div>
+              <div class="detail-item"><div class="di-label">HITS</div><div class="di-value">${p.hits}</div></div>
+              <div class="detail-item"><div class="di-label">2B</div><div class="di-value">${p.doubles}</div></div>
+              <div class="detail-item"><div class="di-label">3B</div><div class="di-value">${p.triples}</div></div>
+              <div class="detail-item"><div class="di-label">HR</div><div class="di-value">${p.hr}</div></div>
+              <div class="detail-item"><div class="di-label">RBI</div><div class="di-value">${p.rbi}</div></div>
+              <div class="detail-item"><div class="di-label">SB</div><div class="di-value">${p.sb}</div></div>
+              <div class="detail-item"><div class="di-label">AVG</div><div class="di-value">${p.avg}</div></div>
+              <div class="detail-item"><div class="di-label">OBP</div><div class="di-value">${p.obp}</div></div>
+              <div class="detail-item"><div class="di-label">SLG</div><div class="di-value">${p.slg}</div></div>
+              <div class="detail-item"><div class="di-label">OPS</div><div class="di-value">${p.ops}</div></div>
+            </div>
+          </div></td></tr>`;
+      }
+      return html + `</tbody></table>`;
+    }
+
     function getNBASeason() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
+      const now = new Date(), year = now.getFullYear(), month = now.getMonth();
       const startYear = month >= 9 ? year : year - 1;
-      const endYear = (startYear + 1) % 100;
-      return `${startYear}-${String(endYear).padStart(2, "0")}`;
+      return `${startYear}-${String((startYear + 1) % 100).padStart(2, "0")}`;
     }
 
-    // Calculate EPT
-    function calcEPT(pts, reb, ast, stl, blk, tov) {
+    function getMLBSeason() { return new Date().getFullYear(); }
+
+    function calcNBAEPT(pts, reb, ast, stl, blk, tov) {
       return +(pts * 1.5 + reb * 1.5 + ast * 1.5 + stl * 3 + blk * 3 - tov * 1.5).toFixed(1);
     }
 
-    // Fetch stats directly from NBA (works on GitHub Pages via CORS proxy)
+    // MLB EPT: (H*1.5) + (HR*4) + (RBI*1.5) + (R*1.5) + (SB*3) + (BB*1)
+    function calcMLBEPT(hits, hr, rbi, runs, sb, bb) {
+      return +(hits * 1.5 + hr * 4 + rbi * 1.5 + runs * 1.5 + sb * 3 + bb * 1).toFixed(1);
+    }
+
+    // ─── Fetch NBA Stats ───
     async function fetchNBAStats() {
       const season = getNBASeason();
       const nbaUrl = `https://stats.nba.com/stats/leagueLeaders?ActiveFlag=&LeagueID=00&PerMode=Totals&Scope=S&Season=${season}&SeasonType=Regular+Season&StatCategory=PTS`;
 
-      // Try direct fetch first (works locally with server), then try CORS proxy for GitHub Pages
       let resp;
       try {
         resp = await fetch("/api/stats");
-        if (resp.ok) {
-          return await resp.json();
-        }
-      } catch (e) {
-        // Local server not running, use CORS proxy
-      }
+        if (resp.ok) return await resp.json();
+      } catch (e) {}
 
-      // Try multiple CORS proxies as fallback for GitHub Pages
       const proxies = [
         `https://api.allorigins.win/raw?url=${encodeURIComponent(nbaUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(nbaUrl)}`,
         `https://proxy.cors.sh/${nbaUrl}`,
       ];
-
-      let lastError;
       for (const proxyUrl of proxies) {
         try {
-          resp = await fetch(proxyUrl, {
-            headers: {
-              'Origin': window.location.origin
-            }
-          });
+          resp = await fetch(proxyUrl, { headers: { 'Origin': window.location.origin } });
           if (resp.ok) break;
-        } catch (e) {
-          lastError = e;
-        }
+        } catch (e) {}
       }
-
-      if (!resp || !resp.ok) throw new Error(`Could not fetch NBA stats. Try refreshing.`);
+      if (!resp || !resp.ok) throw new Error("Could not fetch NBA stats. Try refreshing.");
 
       const nbaData = await resp.json();
-      const headers = nbaData.resultSet.headers;
-      const rows = nbaData.resultSet.rowSet;
+      const headers = nbaData.resultSet.headers, rows = nbaData.resultSet.rowSet;
+      const idx = {}; headers.forEach((h, i) => (idx[h] = i));
 
-      const idx = {};
-      headers.forEach((h, i) => (idx[h] = i));
-
-      const players = rows.map((r) => {
-        const gp = r[idx["GP"]] ?? 0;
-        const pts = r[idx["PTS"]] ?? 0;
-        const reb = r[idx["REB"]] ?? 0;
-        const ast = r[idx["AST"]] ?? 0;
-        const stl = r[idx["STL"]] ?? 0;
-        const blk = r[idx["BLK"]] ?? 0;
-        const tov = r[idx["TOV"]] ?? 0;
-        const fgm = r[idx["FGM"]] ?? 0;
-        const fga = r[idx["FGA"]] ?? 0;
-        const fg3m = r[idx["FG3M"]] ?? 0;
-        const fg3a = r[idx["FG3A"]] ?? 0;
-        const ftm = r[idx["FTM"]] ?? 0;
-        const fta = r[idx["FTA"]] ?? 0;
-        const fgPct = r[idx["FG_PCT"]] ?? (fga ? fgm / fga : 0);
-        const ftPct = r[idx["FT_PCT"]] ?? (fta ? ftm / fta : 0);
-        const tpPct = r[idx["FG3_PCT"]] ?? (fg3a ? fg3m / fg3a : 0);
-
+      const players = rows.map(r => {
+        const gp=r[idx["GP"]]??0, pts=r[idx["PTS"]]??0, reb=r[idx["REB"]]??0, ast=r[idx["AST"]]??0;
+        const stl=r[idx["STL"]]??0, blk=r[idx["BLK"]]??0, tov=r[idx["TOV"]]??0;
+        const fgm=r[idx["FGM"]]??0, fga=r[idx["FGA"]]??0, fg3m=r[idx["FG3M"]]??0, fg3a=r[idx["FG3A"]]??0;
+        const ftm=r[idx["FTM"]]??0, fta=r[idx["FTA"]]??0;
+        const fgPct=r[idx["FG_PCT"]]??(fga?fgm/fga:0), ftPct=r[idx["FT_PCT"]]??(fta?ftm/fta:0);
+        const tpPct=r[idx["FG3_PCT"]]??(fg3a?fg3m/fg3a:0);
         return {
-          name: r[idx["PLAYER"]],
-          team: r[idx["TEAM"]],
-          gp, pts, reb, ast, stl, blk, tov,
-          fgm, fga, fg3m, fg3a, ftm, fta,
-          fgPct: +(fgPct * 100).toFixed(1),
-          ftPct: +(ftPct * 100).toFixed(1),
-          tpPct: +(tpPct * 100).toFixed(1),
-          ppg: gp ? +(pts / gp).toFixed(1) : 0,
-          rpg: gp ? +(reb / gp).toFixed(1) : 0,
-          apg: gp ? +(ast / gp).toFixed(1) : 0,
-          spg: gp ? +(stl / gp).toFixed(1) : 0,
-          bpg: gp ? +(blk / gp).toFixed(1) : 0,
-          topg: gp ? +(tov / gp).toFixed(1) : 0,
-          ept: calcEPT(pts, reb, ast, stl, blk, tov),
+          name: r[idx["PLAYER"]], team: r[idx["TEAM"]],
+          gp, pts, reb, ast, stl, blk, tov, fgm, fga, fg3m, fg3a, ftm, fta,
+          fgPct: +(fgPct*100).toFixed(1), ftPct: +(ftPct*100).toFixed(1), tpPct: +(tpPct*100).toFixed(1),
+          ppg: avg(pts,gp), rpg: avg(reb,gp), apg: avg(ast,gp),
+          spg: avg(stl,gp), bpg: avg(blk,gp), topg: avg(tov,gp),
+          ept: calcNBAEPT(pts, reb, ast, stl, blk, tov),
         };
       });
-
       players.sort((a, b) => b.ept - a.ept);
-
-      return {
-        players: players.slice(0, 25),
-        season,
-        updatedAt: new Date().toISOString(),
-      };
+      return { players: players.slice(0, 25), season, updatedAt: new Date().toISOString() };
     }
 
-    async function main() {
+    // ─── Fetch MLB Stats ───
+    async function fetchMLBStats() {
+      const season = getMLBSeason();
+      const mlbUrl = `https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season=${season}&sortStat=hits&order=desc&limit=50&sportId=1`;
+
+      let resp;
+      try { resp = await fetch(mlbUrl); } catch (e) {}
+
+      if (!resp || !resp.ok) {
+        const proxies = [
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(mlbUrl)}`,
+          `https://corsproxy.io/?${encodeURIComponent(mlbUrl)}`,
+        ];
+        for (const proxyUrl of proxies) {
+          try { resp = await fetch(proxyUrl); if (resp.ok) break; } catch (e) {}
+        }
+      }
+      if (!resp || !resp.ok) throw new Error("Could not fetch MLB stats. Try refreshing.");
+
+      const mlbData = await resp.json();
+      const splits = mlbData.stats[0].splits;
+
+      const players = splits.map(s => {
+        const st = s.stat;
+        const hits=st.hits??0, hr=st.homeRuns??0, rbi=st.rbi??0, runs=st.runs??0;
+        const sb=st.stolenBases??0, bb=st.baseOnBalls??0, ab=st.atBats??0;
+        const doubles=st.doubles??0, triples=st.triples??0, games=st.gamesPlayed??0;
+        return {
+          name: s.player.fullName, team: s.team ? s.team.name : "—",
+          games, ab, runs, hits, doubles, triples, hr, rbi, sb, bb,
+          avg: st.avg??".000", obp: st.obp??".000", slg: st.slg??".000", ops: st.ops??".000",
+          ept: calcMLBEPT(hits, hr, rbi, runs, sb, bb),
+        };
+      });
+      players.sort((a, b) => b.ept - a.ept);
+      return { players: players.slice(0, 25), season, updatedAt: new Date().toISOString() };
+    }
+
+    // ─── Switch Sport ───
+    function switchSport(sport) {
+      if (sport === currentSport) return;
+      currentSport = sport;
+      document.getElementById("badge-nba").classList.toggle("active", sport === "nba");
+      document.getElementById("badge-mlb").classList.toggle("active", sport === "mlb");
+      loadSport();
+    }
+
+    // ─── Load Current Sport ───
+    async function loadSport() {
       const contentEl = document.getElementById("content");
       const weekLabel = document.getElementById("week-label");
       const updatedEl = document.getElementById("last-updated");
+      const formulaBox = document.querySelector(".formula-box");
+      const headerDesc = document.getElementById("header-desc");
+
+      contentEl.innerHTML = `<div class="loading"><div class="spinner"></div><p>Fetching ${currentSport.toUpperCase()} stats...</p></div>`;
+      document.getElementById("top-player").style.display = "none";
+      document.getElementById("stat-leaders").style.display = "none";
 
       try {
-        const data = await fetchNBAStats();
+        if (currentSport === "nba") {
+          headerDesc.textContent = "The best NBA players, ranked by EPT Rating.";
+          formulaBox.querySelector("h3").textContent = "EPT Rating Formula";
+          formulaBox.querySelector("p").innerHTML = "(PTS &times; 1.5) + (REB &times; 1.5) + (AST &times; 1.5) + (STL &times; 3) + (BLK &times; 3) &minus; (TO &times; 1.5)";
 
-        if (data.error) throw new Error(data.error);
+          const data = await fetchNBAStats();
+          if (data.error) throw new Error(data.error);
+          weekLabel.textContent = `${data.season || getNBASeason()} Season`;
+          if (!data.players || !data.players.length) { contentEl.innerHTML = `<div class="error-msg"><p>No games found yet. Check back later!</p></div>`; return; }
 
-        weekLabel.textContent = `${data.season || getNBASeason()} Season`;
+          // Stat leaders
+          const slEl = document.getElementById("stat-leaders");
+          const cats = [
+            {key:"pts",label:"Most Points"},{key:"reb",label:"Most Rebounds"},{key:"ast",label:"Most Assists"},
+            {key:"blk",label:"Most Blocks"},{key:"stl",label:"Most Steals"},{key:"tov",label:"Most Turnovers"},
+            {key:"fgPct",label:"Highest FG%",suffix:"%",made:"fgm",attempted:"fga"},
+            {key:"ftPct",label:"Highest FT%",suffix:"%",made:"ftm",attempted:"fta"},
+            {key:"tpPct",label:"Highest 3P%",suffix:"%",made:"fg3m",attempted:"fg3a"},
+          ];
+          let slHtml = "";
+          for (const c of cats) {
+            const l = data.players.reduce((b,p) => p[c.key]>b[c.key]?p:b, data.players[0]);
+            const v = c.suffix ? l[c.key]+c.suffix : l[c.key];
+            const f = c.made ? `<div class="sl-sub">${l[c.made]}/${l[c.attempted]}</div>` : "";
+            slHtml += `<div class="stat-leader-card"><div class="sl-category">${c.label}</div><div class="sl-value">${v}</div>${f}<div class="sl-name">${l.name}</div><div class="sl-team">${l.team}</div></div>`;
+          }
+          slEl.innerHTML = slHtml; slEl.style.display = "grid";
 
-        if (!data.players || data.players.length === 0) {
-          contentEl.innerHTML = `
-            <div class="error-msg">
-              <p>No games found for this week yet. Check back later!</p>
-            </div>
-          `;
-          return;
+          // Top player
+          const topEl = document.getElementById("top-player"), top = data.players[0];
+          topEl.style.display = "block";
+          topEl.innerHTML = `<div class="crown">👑</div><div class="tp-label">#1 Player</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats"><div class="tp-stat"><strong>${top.pts}</strong> PTS</div><div class="tp-stat"><strong>${top.reb}</strong> REB</div><div class="tp-stat"><strong>${top.ast}</strong> AST</div><div class="tp-stat"><strong>${top.stl}</strong> STL</div><div class="tp-stat"><strong>${top.blk}</strong> BLK</div></div>`;
+
+          contentEl.innerHTML = renderNBATable(data.players);
+          updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
+
+        } else {
+          // ─── MLB ───
+          headerDesc.textContent = "The best MLB players, ranked by EPT Rating.";
+          formulaBox.querySelector("h3").textContent = "EPT Rating Formula (MLB)";
+          formulaBox.querySelector("p").innerHTML = "(H &times; 1.5) + (HR &times; 4) + (RBI &times; 1.5) + (R &times; 1.5) + (SB &times; 3) + (BB &times; 1)";
+
+          const data = await fetchMLBStats();
+          if (data.error) throw new Error(data.error);
+          weekLabel.textContent = `${data.season} Season`;
+          if (!data.players || !data.players.length) { contentEl.innerHTML = `<div class="error-msg"><p>No MLB stats found yet. The season may not have started.</p></div>`; return; }
+
+          // Stat leaders
+          const slEl = document.getElementById("stat-leaders");
+          const cats = [
+            {key:"hits",label:"Most Hits"},{key:"hr",label:"Most Home Runs"},{key:"rbi",label:"Most RBI"},
+            {key:"runs",label:"Most Runs"},{key:"sb",label:"Most Stolen Bases"},{key:"bb",label:"Most Walks"},
+          ];
+          let slHtml = "";
+          for (const c of cats) {
+            const l = data.players.reduce((b,p) => p[c.key]>b[c.key]?p:b, data.players[0]);
+            slHtml += `<div class="stat-leader-card"><div class="sl-category">${c.label}</div><div class="sl-value">${l[c.key]}</div><div class="sl-name">${l.name}</div><div class="sl-team">${l.team}</div></div>`;
+          }
+          slEl.innerHTML = slHtml; slEl.style.display = "grid";
+
+          // Top player
+          const topEl = document.getElementById("top-player"), top = data.players[0];
+          topEl.style.display = "block";
+          topEl.innerHTML = `<div class="crown">👑</div><div class="tp-label">#1 Player</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats"><div class="tp-stat"><strong>${top.hits}</strong> H</div><div class="tp-stat"><strong>${top.hr}</strong> HR</div><div class="tp-stat"><strong>${top.rbi}</strong> RBI</div><div class="tp-stat"><strong>${top.runs}</strong> R</div><div class="tp-stat"><strong>${top.sb}</strong> SB</div></div>`;
+
+          contentEl.innerHTML = renderMLBTable(data.players);
+          updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
         }
 
-        // Show stat leader boxes
-        const slEl = document.getElementById("stat-leaders");
-        const categories = [
-          { key: "pts", label: "Most Points" },
-          { key: "reb", label: "Most Rebounds" },
-          { key: "ast", label: "Most Assists" },
-          { key: "blk", label: "Most Blocks" },
-          { key: "stl", label: "Most Steals" },
-          { key: "tov", label: "Most Turnovers" },
-          { key: "fgPct", label: "Highest FG%", suffix: "%", made: "fgm", attempted: "fga" },
-          { key: "ftPct", label: "Highest FT%", suffix: "%", made: "ftm", attempted: "fta" },
-          { key: "tpPct", label: "Highest 3P%", suffix: "%", made: "fg3m", attempted: "fg3a" },
-        ];
-        let slHtml = "";
-        for (const cat of categories) {
-          const leader = data.players.reduce((best, p) => p[cat.key] > best[cat.key] ? p : best, data.players[0]);
-          const displayVal = cat.suffix ? leader[cat.key] + cat.suffix : leader[cat.key];
-          const fractionHtml = cat.made ? `<div class="sl-sub">${leader[cat.made]}/${leader[cat.attempted]}</div>` : "";
-          slHtml += `
-            <div class="stat-leader-card">
-              <div class="sl-category">${cat.label}</div>
-              <div class="sl-value">${displayVal}</div>
-              ${fractionHtml}
-              <div class="sl-name">${leader.name}</div>
-              <div class="sl-team">${leader.team}</div>
-            </div>
-          `;
-        }
-        slEl.innerHTML = slHtml;
-        slEl.style.display = "grid";
-
-        // Show top player box
-        const topEl = document.getElementById("top-player");
-        const top = data.players[0];
-        topEl.style.display = "block";
-        topEl.innerHTML = `
-          <div class="crown">👑</div>
-          <div class="tp-label">#1 Player</div>
-          <div class="tp-name">${top.name}</div>
-          <div class="tp-team">${top.team}</div>
-          <div class="tp-ept">${top.ept} <span>EPT</span></div>
-          <div class="tp-stats">
-            <div class="tp-stat"><strong>${top.pts}</strong> PTS</div>
-            <div class="tp-stat"><strong>${top.reb}</strong> REB</div>
-            <div class="tp-stat"><strong>${top.ast}</strong> AST</div>
-            <div class="tp-stat"><strong>${top.stl}</strong> STL</div>
-            <div class="tp-stat"><strong>${top.blk}</strong> BLK</div>
-          </div>
-        `;
-
-        contentEl.innerHTML = renderTable(data.players);
-
-        // Add click-to-expand handlers
+        // Click-to-expand handlers
         contentEl.querySelectorAll(".player-row").forEach(row => {
           row.addEventListener("click", () => {
-            const idx = row.dataset.index;
-            const detail = contentEl.querySelector(`.detail-row[data-index="${idx}"]`);
+            const detail = contentEl.querySelector(`.detail-row[data-index="${row.dataset.index}"]`);
             detail.classList.toggle("open");
           });
         });
 
-        updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
-
       } catch (err) {
         console.error(err);
-        contentEl.innerHTML = `
-          <div class="error-msg">
-            <p>Could not load stats. Please try again.</p>
-            <p style="font-size:0.8rem; margin-top:8px;">${err.message}</p>
-            <button onclick="location.reload()">Try Again</button>
-          </div>
-        `;
+        contentEl.innerHTML = `<div class="error-msg"><p>Could not load stats. Please try again.</p><p style="font-size:0.8rem; margin-top:8px;">${err.message}</p><button onclick="loadSport()">Try Again</button></div>`;
       }
     }
 
-    main();
-
-    // Auto-refresh every 5 minutes
-    setInterval(main, 5 * 60 * 1000);
+    loadSport();
+    setInterval(loadSport, 5 * 60 * 1000);
   </script>
 
 </body>
