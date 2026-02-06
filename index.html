@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -624,10 +625,28 @@
         // Local server not running, use CORS proxy
       }
 
-      // Use corsproxy.io for GitHub Pages
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(nbaUrl)}`;
-      resp = await fetch(proxyUrl);
-      if (!resp.ok) throw new Error(`NBA API error: ${resp.status}`);
+      // Try multiple CORS proxies as fallback for GitHub Pages
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(nbaUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(nbaUrl)}`,
+        `https://proxy.cors.sh/${nbaUrl}`,
+      ];
+
+      let lastError;
+      for (const proxyUrl of proxies) {
+        try {
+          resp = await fetch(proxyUrl, {
+            headers: {
+              'Origin': window.location.origin
+            }
+          });
+          if (resp.ok) break;
+        } catch (e) {
+          lastError = e;
+        }
+      }
+
+      if (!resp || !resp.ok) throw new Error(`Could not fetch NBA stats. Try refreshing.`);
 
       const nbaData = await resp.json();
       const headers = nbaData.resultSet.headers;
