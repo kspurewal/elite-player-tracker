@@ -1,1 +1,2679 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>Elite Player Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-bottom: 3px solid #4ade80;
+      padding: 24px 0;
+      text-align: center;
+    }
+
+    .header-logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    header h1 span {
+      color: #4ade80;
+    }
+
+    header p {
+      color: #8892b0;
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+
+    .subtitle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .subtitle .badge {
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid #4ade80;
+      color: #4ade80;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .subtitle .badge:hover {
+      background: rgba(74, 222, 128, 0.25);
+    }
+
+    .subtitle .badge.active {
+      background: #4ade80;
+      color: #0a0a1a;
+    }
+
+    .subtitle .badge:not(.active) {
+      opacity: 0.6;
+    }
+
+    .subtitle .week-label {
+      color: #8892b0;
+      font-size: 0.85rem;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .top25-heading {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ef4444;
+      margin-bottom: 20px;
+    }
+
+    .formula-box {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .formula-box h3 {
+      color: #4ade80;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .formula-box p {
+      color: #8892b0;
+      font-size: 0.82rem;
+      font-family: monospace;
+    }
+
+    .top-player-box {
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+      border: 2px solid #ffd700;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 28px;
+      text-align: center;
+      display: none;
+    }
+
+    .top-player-box .crown {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .top-player-box .tp-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ffd700;
+      margin-bottom: 8px;
+    }
+
+    .top-player-box .tp-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .top-player-box .tp-team {
+      font-size: 0.85rem;
+      color: #8892b0;
+      margin-top: 4px;
+    }
+
+    .top-player-box .tp-ept {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #4ade80;
+      margin-top: 12px;
+    }
+
+    .top-player-box .tp-ept span {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #8892b0;
+    }
+
+    .top-player-box .tp-stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .top-player-box .tp-stat {
+      color: #b0b0d0;
+      font-size: 0.85rem;
+    }
+
+    .top-player-box .tp-stat strong {
+      color: #fff;
+    }
+
+    .stat-leaders {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-leader-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-leader-card .sl-category {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #8892b0;
+      margin-bottom: 8px;
+    }
+
+    .stat-leader-card .sl-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #4ade80;
+    }
+
+    .stat-leader-card .sl-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 6px;
+    }
+
+    .stat-leader-card .sl-sub {
+      font-size: 0.7rem;
+      color: #6a6a9a;
+      margin-top: 2px;
+    }
+
+    .stat-leader-card .sl-team {
+      font-size: 0.7rem;
+      color: #6a6a9a;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 700px) {
+      .stat-leaders {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8892b0;
+    }
+
+    .loading .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #2a2a4a;
+      border-top-color: #4ade80;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      border-radius: 10px;
+    }
+
+    .error-msg button {
+      margin-top: 12px;
+      background: #4ade80;
+      color: #fff;
+      border: none;
+      padding: 8px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .error-msg button:hover {
+      background: #38b866;
+    }
+
+    /* Table */
+    .player-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #12122a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .player-table thead {
+      background: #1a1a2e;
+    }
+
+    .player-table th {
+      padding: 14px 12px;
+      text-align: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8892b0;
+      border-bottom: 2px solid #4ade80;
+    }
+
+    .player-table th:nth-child(1),
+    .player-table th:nth-child(2) {
+      text-align: left;
+    }
+
+    .player-table td {
+      padding: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #1e1e3a;
+    }
+
+    .player-table td:nth-child(1),
+    .player-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    .player-table tbody tr.player-row {
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+
+    .player-table tbody tr.player-row:hover {
+      background: rgba(74, 222, 128, 0.06);
+    }
+
+    .player-table tbody tr.detail-row {
+      display: none;
+    }
+
+    .player-table tbody tr.detail-row.open {
+      display: table-row;
+    }
+
+    .player-table tbody tr.detail-row td {
+      padding: 0;
+      border-bottom: 2px solid #2a2a4a;
+    }
+
+    .detail-content {
+      background: #0e0e22;
+      padding: 16px 20px;
+    }
+
+    .detail-content h4 {
+      color: #4ade80;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .detail-grid {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .detail-grid .detail-item {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 8px;
+      padding: 10px 16px;
+      text-align: center;
+      min-width: 80px;
+      flex: 1;
+    }
+
+    .detail-item .di-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8892b0;
+      margin-bottom: 4px;
+    }
+
+    .detail-item .di-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .detail-item .di-sub {
+      font-size: 0.7rem;
+      color: #6a6a9a;
+      margin-top: 2px;
+    }
+
+    /* Rank column */
+    .rank {
+      font-weight: 700;
+      color: #8892b0;
+      width: 40px;
+      padding-left: 16px !important;
+    }
+
+    .rank-1 { color: #ffd700; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #cd7f32; }
+
+    /* Player cell with headshot */
+    .player-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-headshot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1a1a2e;
+      flex-shrink: 0;
+    }
+
+    .player-name {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .player-team {
+      font-size: 0.75rem;
+      color: #6a6a9a;
+      margin-top: 2px;
+    }
+
+    /* Top player card headshot */
+    .tp-headshot {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 8px;
+      display: block;
+      background: #1a1a2e;
+      border: 3px solid #4ade80;
+    }
+
+    /* EPT rating column */
+    .ept-rating {
+      font-weight: 700;
+      color: #4ade80;
+      font-size: 1rem;
+    }
+
+    /* Stat values */
+    .stat-val {
+      color: #b0b0d0;
+    }
+
+    /* Last updated */
+    .last-updated {
+      text-align: center;
+      margin-top: 20px;
+      color: #5a5a7a;
+      font-size: 0.78rem;
+    }
+
+    /* Position tabs (NFL) */
+    .position-tabs {
+      display: none;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .position-tabs.visible {
+      display: flex;
+    }
+
+    .pos-tab {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      color: #8892b0;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pos-tab:hover {
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+
+    .pos-tab.active {
+      background: #4ade80;
+      color: #0a0a1a;
+      border-color: #4ade80;
+    }
+
+    .position-section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #4ade80;
+      margin: 28px 0 14px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .position-section-title:first-child {
+      margin-top: 0;
+    }
+
+    /* Game of the Week */
+    .gotw-box {
+      background: linear-gradient(135deg, #1a1a2e 0%, #1e1040 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: none;
+    }
+
+    .gotw-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #f59e0b;
+      text-align: center;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .gotw-matchup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .gotw-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 100px;
+    }
+
+    .gotw-team img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .gotw-team-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+    }
+
+    .gotw-team-record {
+      font-size: 0.7rem;
+      color: #6a6a9a;
+    }
+
+    .gotw-score {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gotw-score-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .gotw-score-val.winner {
+      color: #4ade80;
+    }
+
+    .gotw-vs {
+      font-size: 0.85rem;
+      color: #5a5a7a;
+      font-weight: 700;
+    }
+
+    .gotw-headline {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #8892b0;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .gotw-date {
+      text-align: center;
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: #5a5a7a;
+    }
+
+    @media (max-width: 700px) {
+      .gotw-team img { width: 36px; height: 36px; }
+      .gotw-score-val { font-size: 1.2rem; }
+      .gotw-team-name { font-size: 0.75rem; }
+    }
+
+    /* Sortable Columns */
+    .player-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+      position: relative;
+    }
+
+    .player-table th.sortable:hover {
+      color: #4ade80;
+    }
+
+    .player-table th.sortable::after {
+      content: "";
+      margin-left: 4px;
+      font-size: 0.6rem;
+      opacity: 0.3;
+    }
+
+    .player-table th.sortable.sort-asc::after {
+      content: "\25B2";
+      opacity: 1;
+      color: #4ade80;
+    }
+
+    .player-table th.sortable.sort-desc::after {
+      content: "\25BC";
+      opacity: 1;
+      color: #4ade80;
+    }
+
+    /* Injury Badges */
+    .injury-badge {
+      display: inline-block;
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+      cursor: help;
+    }
+
+    .injury-badge.out {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .injury-badge.dtd {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .injury-badge.doubtful {
+      background: rgba(234, 179, 8, 0.2);
+      color: #eab308;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+
+    /* Awards Race */
+    .awards-section {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .awards-section.visible {
+      display: grid;
+    }
+
+    .award-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 16px;
+      border-top: 3px solid #ffd700;
+    }
+
+    .award-card .award-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #ffd700;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .award-candidate {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #1e1e3a;
+    }
+
+    .award-candidate:last-child {
+      border-bottom: none;
+    }
+
+    .award-candidate-rank {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #8892b0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .award-candidate-rank.gold { color: #ffd700; }
+    .award-candidate-rank.silver { color: #c0c0c0; }
+    .award-candidate-rank.bronze { color: #cd7f32; }
+
+    .award-candidate img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #12122a;
+      flex-shrink: 0;
+    }
+
+    .award-candidate-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .award-candidate-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .award-candidate-team {
+      font-size: 0.65rem;
+      color: #6a6a9a;
+    }
+
+    .award-candidate-stat {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4ade80;
+      white-space: nowrap;
+    }
+
+    /* Player Search */
+    .search-container {
+      max-width: 500px;
+      margin: 16px auto 0;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      background: #12122a;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-container input::placeholder {
+      color: #5a5a7a;
+    }
+
+    .search-container input:focus {
+      border-color: #4ade80;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #5a5a7a;
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #12122a;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .search-dropdown.open {
+      display: block;
+    }
+
+    .search-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid #1e1e3a;
+    }
+
+    .search-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-item:hover {
+      background: rgba(74, 222, 128, 0.08);
+    }
+
+    .search-item img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1a1a2e;
+      flex-shrink: 0;
+    }
+
+    .search-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-item-name {
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.85rem;
+    }
+
+    .search-item-sub {
+      font-size: 0.7rem;
+      color: #6a6a9a;
+    }
+
+    .search-item-rank {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #4ade80;
+      white-space: nowrap;
+    }
+
+    /* Search Result Card */
+    .search-result-card {
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+      border: 2px solid #4ade80;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 28px;
+      display: none;
+    }
+
+    .src-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .src-headshot {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1a1a2e;
+      border: 3px solid #4ade80;
+      flex-shrink: 0;
+    }
+
+    .src-info {
+      flex: 1;
+    }
+
+    .src-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .src-team {
+      font-size: 0.85rem;
+      color: #8892b0;
+      margin-top: 2px;
+    }
+
+    .src-rank {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #f59e0b;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    .src-ept {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .src-ept-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #4ade80;
+    }
+
+    .src-ept-label {
+      font-size: 0.7rem;
+      color: #8892b0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .src-close {
+      position: relative;
+      float: right;
+      background: none;
+      border: none;
+      color: #5a5a7a;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .src-close:hover {
+      color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      header h1 { font-size: 1.6rem; }
+      .player-table { font-size: 0.8rem; }
+      .player-table th, .player-table td { padding: 8px 6px; }
+      .hide-mobile { display: none; }
+      .src-header { flex-wrap: wrap; }
+      .src-headshot { width: 48px; height: 48px; }
+      .src-name { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="logo.png" alt="EPT Logo" class="header-logo">
+    <h1><span>E</span>LITE <span>P</span>LAYER <span>T</span>RACKER</h1>
+    <p id="header-desc">The best NBA players, ranked by EPT Rating.</p>
+    <div class="subtitle">
+      <span class="badge active" id="badge-nba" onclick="switchSport('nba')">NBA</span>
+      <span class="badge" id="badge-mlb" onclick="switchSport('mlb')">MLB</span>
+      <span class="badge" id="badge-nfl" onclick="switchSport('nfl')">NFL</span>
+      <span class="badge" id="badge-nhl" onclick="switchSport('nhl')">NHL</span>
+      <span class="week-label" id="week-label">Loading week...</span>
+    </div>
+    <div class="search-container">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="search-input" placeholder="Search any player..." autocomplete="off">
+      <div class="search-dropdown" id="search-dropdown"></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="search-result-card" class="search-result-card"></div>
+    <h2 class="top25-heading">Top 25 Players</h2>
+    <div class="formula-box">
+      <h3>EPT Rating Formula</h3>
+      <p>(PTS &times; 1.5) + (REB &times; 1.5) + (AST &times; 1.5) + (STL &times; 3) + (BLK &times; 3) &minus; (TO &times; 1.5)</p>
+    </div>
+
+    <div id="game-of-week" class="gotw-box"></div>
+
+    <div id="position-tabs" class="position-tabs"></div>
+
+    <div id="top-player" class="top-player-box"></div>
+
+    <div id="stat-leaders" class="stat-leaders" style="display:none;"></div>
+
+    <div id="awards-race" class="awards-section"></div>
+
+    <div id="content">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Fetching NBA stats...</p>
+      </div>
+    </div>
+
+    <div class="last-updated" id="last-updated"></div>
+  </main>
+
+  <script>
+    let currentSport = 'nba';
+    let currentNFLPos = 'all';
+    let nflCache = null;
+    let currentMLBTab = 'hitting';
+    let mlbCache = null;
+    let nhlCache = null;
+    let searchCache = []; // full EPT-sorted player list for current sport
+    let injuryMap = {}; // lowercased player name -> {status, type}
+    let currentSortField = "ept";
+    let currentSortDir = "desc";
+    let currentPlayers = []; // current displayed players array for re-sorting
+
+    function avg(val, gp) { return gp ? +(val / gp).toFixed(1) : 0; }
+    function headshot(url) { return url ? `<img class="player-headshot" src="${url}" alt="" onerror="this.style.display='none'">` : ""; }
+
+    // ─── NBA Table ───
+    function renderNBATable(players) {
+      players.forEach(p => {
+        if (p.ppg == null) p.ppg = avg(p.pts, p.gp);
+        if (p.rpg == null) p.rpg = avg(p.reb, p.gp);
+        if (p.apg == null) p.apg = avg(p.ast, p.gp);
+        if (p.spg == null) p.spg = avg(p.stl, p.gp);
+        if (p.bpg == null) p.bpg = avg(p.blk, p.gp);
+        if (p.topg == null) p.topg = avg(p.tov, p.gp);
+        if (p.fgPct == null) p.fgPct = 0;
+        if (p.tpPct == null) p.tpPct = 0;
+        if (p.ftPct == null) p.ftPct = 0;
+        if (p.fgm == null) p.fgm = 0;
+        if (p.fga == null) p.fga = 0;
+        if (p.fg3m == null) p.fg3m = 0;
+        if (p.fg3a == null) p.fg3a = 0;
+        if (p.ftm == null) p.ftm = 0;
+        if (p.fta == null) p.fta = 0;
+      });
+      let html = `<table class="player-table"><thead><tr>
+        <th>#</th><th>Player</th><th class="sortable" data-sort="gp">GP</th><th class="sortable" data-sort="pts">PTS</th><th class="sortable" data-sort="reb">REB</th><th class="sortable" data-sort="ast">AST</th>
+        <th class="hide-mobile sortable" data-sort="stl">STL</th><th class="hide-mobile sortable" data-sort="blk">BLK</th><th class="hide-mobile sortable" data-sort="tov">TO</th><th class="sortable sort-desc" data-sort="ept">EPT Points</th>
+      </tr></thead><tbody>`;
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i], rank = i + 1;
+        let rc = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+        html += `
+          <tr class="player-row" data-index="${i}">
+            <td class="rank ${rc}">${rank}</td>
+            <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team}</div></div></div></td>
+            <td class="stat-val">${p.gp}</td><td class="stat-val">${p.pts}</td>
+            <td class="stat-val">${p.reb}</td><td class="stat-val">${p.ast}</td>
+            <td class="stat-val hide-mobile">${p.stl}</td><td class="stat-val hide-mobile">${p.blk}</td>
+            <td class="stat-val hide-mobile">${p.tov}</td><td class="ept-rating">${p.ept}</td>
+          </tr>
+          <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+            <h4>${p.name} — ${p.team}</h4>
+            <div class="detail-grid">
+              <div class="detail-item"><div class="di-label">FG%</div><div class="di-value">${p.fgPct}%</div><div class="di-sub">${p.fgm}/${p.fga}</div></div>
+              <div class="detail-item"><div class="di-label">3P%</div><div class="di-value">${p.tpPct}%</div><div class="di-sub">${p.fg3m}/${p.fg3a}</div></div>
+              <div class="detail-item"><div class="di-label">FT%</div><div class="di-value">${p.ftPct}%</div><div class="di-sub">${p.ftm}/${p.fta}</div></div>
+              <div class="detail-item"><div class="di-label">PPG</div><div class="di-value">${p.ppg}</div></div>
+              <div class="detail-item"><div class="di-label">RPG</div><div class="di-value">${p.rpg}</div></div>
+              <div class="detail-item"><div class="di-label">APG</div><div class="di-value">${p.apg}</div></div>
+              <div class="detail-item"><div class="di-label">SPG</div><div class="di-value">${p.spg}</div></div>
+              <div class="detail-item"><div class="di-label">BPG</div><div class="di-value">${p.bpg}</div></div>
+              <div class="detail-item"><div class="di-label">TOPG</div><div class="di-value">${p.topg}</div></div>
+            </div>
+          </div></td></tr>`;
+      }
+      return html + `</tbody></table>`;
+    }
+
+    // ─── MLB Table ───
+    function renderMLBTable(players) {
+      let html = `<table class="player-table"><thead><tr>
+        <th>#</th><th>Player</th><th class="sortable" data-sort="games">G</th><th class="sortable" data-sort="hits">H</th><th class="sortable" data-sort="hr">HR</th><th class="sortable" data-sort="rbi">RBI</th>
+        <th class="hide-mobile sortable" data-sort="sb">SB</th><th class="hide-mobile sortable" data-sort="avg">AVG</th><th class="hide-mobile sortable" data-sort="ops">OPS</th><th class="sortable sort-desc" data-sort="ept">EPT Points</th>
+      </tr></thead><tbody>`;
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i], rank = i + 1;
+        let rc = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+        html += `
+          <tr class="player-row" data-index="${i}">
+            <td class="rank ${rc}">${rank}</td>
+            <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team}</div></div></div></td>
+            <td class="stat-val">${p.games}</td><td class="stat-val">${p.hits}</td>
+            <td class="stat-val">${p.hr}</td><td class="stat-val">${p.rbi}</td>
+            <td class="stat-val hide-mobile">${p.sb}</td><td class="stat-val hide-mobile">${p.avg}</td>
+            <td class="stat-val hide-mobile">${p.ops}</td><td class="ept-rating">${p.ept}</td>
+          </tr>
+          <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+            <h4>${p.name} — ${p.team}</h4>
+            <div class="detail-grid">
+              <div class="detail-item"><div class="di-label">AB</div><div class="di-value">${p.ab}</div></div>
+              <div class="detail-item"><div class="di-label">RUNS</div><div class="di-value">${p.runs}</div></div>
+              <div class="detail-item"><div class="di-label">HITS</div><div class="di-value">${p.hits}</div></div>
+              <div class="detail-item"><div class="di-label">2B</div><div class="di-value">${p.doubles}</div></div>
+              <div class="detail-item"><div class="di-label">3B</div><div class="di-value">${p.triples}</div></div>
+              <div class="detail-item"><div class="di-label">HR</div><div class="di-value">${p.hr}</div></div>
+              <div class="detail-item"><div class="di-label">RBI</div><div class="di-value">${p.rbi}</div></div>
+              <div class="detail-item"><div class="di-label">SB</div><div class="di-value">${p.sb}</div></div>
+              <div class="detail-item"><div class="di-label">AVG</div><div class="di-value">${p.avg}</div></div>
+              <div class="detail-item"><div class="di-label">OBP</div><div class="di-value">${p.obp}</div></div>
+              <div class="detail-item"><div class="di-label">SLG</div><div class="di-value">${p.slg}</div></div>
+              <div class="detail-item"><div class="di-label">OPS</div><div class="di-value">${p.ops}</div></div>
+            </div>
+          </div></td></tr>`;
+      }
+      return html + `</tbody></table>`;
+    }
+
+    // ─── MLB Pitcher Table ───
+    function renderMLBPitcherTable(players) {
+      let html = `<table class="player-table"><thead><tr>
+        <th>#</th><th>Player</th><th class="sortable" data-sort="wins">W</th><th class="sortable" data-sort="losses">L</th><th class="sortable" data-sort="era">ERA</th><th class="sortable" data-sort="so">SO</th>
+        <th class="hide-mobile sortable" data-sort="ip">IP</th><th class="hide-mobile sortable" data-sort="whip">WHIP</th><th class="hide-mobile sortable" data-sort="saves">SV</th><th class="sortable sort-desc" data-sort="ept">EPT Points</th>
+      </tr></thead><tbody>`;
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i], rank = i + 1;
+        let rc = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+        html += `
+          <tr class="player-row" data-index="${i}">
+            <td class="rank ${rc}">${rank}</td>
+            <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team}</div></div></div></td>
+            <td class="stat-val">${p.wins}</td><td class="stat-val">${p.losses}</td>
+            <td class="stat-val">${p.era}</td><td class="stat-val">${p.so}</td>
+            <td class="stat-val hide-mobile">${p.ip}</td><td class="stat-val hide-mobile">${p.whip}</td>
+            <td class="stat-val hide-mobile">${p.saves}</td><td class="ept-rating">${p.ept}</td>
+          </tr>
+          <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+            <h4>${p.name} — ${p.team}</h4>
+            <div class="detail-grid">
+              <div class="detail-item"><div class="di-label">W</div><div class="di-value">${p.wins}</div></div>
+              <div class="detail-item"><div class="di-label">L</div><div class="di-value">${p.losses}</div></div>
+              <div class="detail-item"><div class="di-label">ERA</div><div class="di-value">${p.era}</div></div>
+              <div class="detail-item"><div class="di-label">IP</div><div class="di-value">${p.ip}</div></div>
+              <div class="detail-item"><div class="di-label">SO</div><div class="di-value">${p.so}</div></div>
+              <div class="detail-item"><div class="di-label">BB</div><div class="di-value">${p.bb}</div></div>
+              <div class="detail-item"><div class="di-label">WHIP</div><div class="di-value">${p.whip}</div></div>
+              <div class="detail-item"><div class="di-label">H</div><div class="di-value">${p.hits}</div></div>
+              <div class="detail-item"><div class="di-label">ER</div><div class="di-value">${p.er}</div></div>
+              <div class="detail-item"><div class="di-label">SV</div><div class="di-value">${p.saves}</div></div>
+              <div class="detail-item"><div class="di-label">HR</div><div class="di-value">${p.hr}</div></div>
+              <div class="detail-item"><div class="di-label">K/9</div><div class="di-value">${p.k9}</div></div>
+            </div>
+          </div></td></tr>`;
+      }
+      return html + `</tbody></table>`;
+    }
+
+    // ─── NFL Tables by position group ───
+    const NFL_POS_GROUPS = {
+      qb:   { label: "Quarterbacks", positions: ["QB"] },
+      rb:   { label: "Running Backs", positions: ["RB", "FB"] },
+      wr:   { label: "Wide Receivers", positions: ["WR"] },
+      te:   { label: "Tight Ends", positions: ["TE"] },
+      def:  { label: "Defensive Players", positions: ["DE","DT","LB","ILB","OLB","MLB","CB","SS","FS","S","DB","NT","DL"] },
+      k:    { label: "Kickers", positions: ["K","PK"] },
+    };
+
+    function nflQBHeaders() {
+      return `<th>#</th><th>Player</th><th>G</th><th>YDS</th><th>TD</th><th>INT</th>
+        <th class="hide-mobile">CMP%</th><th class="hide-mobile">RTG</th><th class="hide-mobile">RUSH YD</th><th>EPT Points</th>`;
+    }
+    function nflQBRow(p, i) {
+      const rank = i+1, rc = rank<=3 ? `rank-${rank}` : "";
+      return `<tr class="player-row" data-index="${i}">
+        <td class="rank ${rc}">${rank}</td>
+        <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team}</div></div></div></td>
+        <td class="stat-val">${p.games}</td><td class="stat-val">${p.passYds}</td>
+        <td class="stat-val">${p.passTD}</td><td class="stat-val">${p.int}</td>
+        <td class="stat-val hide-mobile">${p.cmpPct}%</td><td class="stat-val hide-mobile">${p.rating}</td>
+        <td class="stat-val hide-mobile">${p.rushYds}</td><td class="ept-rating">${p.ept}</td>
+      </tr>
+      <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+        <h4>${p.name} — ${p.team}</h4>
+        <div class="detail-grid">
+          <div class="detail-item"><div class="di-label">CMP</div><div class="di-value">${p.cmp}</div></div>
+          <div class="detail-item"><div class="di-label">ATT</div><div class="di-value">${p.att}</div></div>
+          <div class="detail-item"><div class="di-label">CMP%</div><div class="di-value">${p.cmpPct}%</div></div>
+          <div class="detail-item"><div class="di-label">PASS YDS</div><div class="di-value">${p.passYds}</div></div>
+          <div class="detail-item"><div class="di-label">PASS TD</div><div class="di-value">${p.passTD}</div></div>
+          <div class="detail-item"><div class="di-label">INT</div><div class="di-value">${p.int}</div></div>
+          <div class="detail-item"><div class="di-label">RTG</div><div class="di-value">${p.rating}</div></div>
+          <div class="detail-item"><div class="di-label">RUSH YDS</div><div class="di-value">${p.rushYds}</div></div>
+          <div class="detail-item"><div class="di-label">RUSH TD</div><div class="di-value">${p.rushTD}</div></div>
+          <div class="detail-item"><div class="di-label">SACKED</div><div class="di-value">${p.sacked}</div></div>
+        </div>
+      </div></td></tr>`;
+    }
+
+    function nflSkillHeaders() {
+      return `<th>#</th><th>Player</th><th>G</th><th>RUSH YD</th><th>REC YD</th><th>TOT TD</th>
+        <th class="hide-mobile">RUSH</th><th class="hide-mobile">REC</th><th class="hide-mobile">FUM</th><th>EPT Points</th>`;
+    }
+    function nflSkillRow(p, i) {
+      const rank = i+1, rc = rank<=3 ? `rank-${rank}` : "";
+      return `<tr class="player-row" data-index="${i}">
+        <td class="rank ${rc}">${rank}</td>
+        <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team} &middot; ${p.pos}</div></div></div></td>
+        <td class="stat-val">${p.games}</td><td class="stat-val">${p.rushYds}</td>
+        <td class="stat-val">${p.recYds}</td><td class="stat-val">${p.totalTD}</td>
+        <td class="stat-val hide-mobile">${p.rushAtt}</td><td class="stat-val hide-mobile">${p.receptions}</td>
+        <td class="stat-val hide-mobile">${p.fumbles}</td><td class="ept-rating">${p.ept}</td>
+      </tr>
+      <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+        <h4>${p.name} — ${p.team} (${p.pos})</h4>
+        <div class="detail-grid">
+          <div class="detail-item"><div class="di-label">RUSH ATT</div><div class="di-value">${p.rushAtt}</div></div>
+          <div class="detail-item"><div class="di-label">RUSH YDS</div><div class="di-value">${p.rushYds}</div></div>
+          <div class="detail-item"><div class="di-label">RUSH TD</div><div class="di-value">${p.rushTD}</div></div>
+          <div class="detail-item"><div class="di-label">REC</div><div class="di-value">${p.receptions}</div></div>
+          <div class="detail-item"><div class="di-label">REC YDS</div><div class="di-value">${p.recYds}</div></div>
+          <div class="detail-item"><div class="di-label">REC TD</div><div class="di-value">${p.recTD}</div></div>
+          <div class="detail-item"><div class="di-label">TOTAL TD</div><div class="di-value">${p.totalTD}</div></div>
+          <div class="detail-item"><div class="di-label">FUMBLES</div><div class="di-value">${p.fumbles}</div></div>
+        </div>
+      </div></td></tr>`;
+    }
+
+    function nflDefHeaders() {
+      return `<th>#</th><th>Player</th><th>G</th><th>TACKLES</th><th>SACKS</th><th>INT</th>
+        <th class="hide-mobile">TFL</th><th class="hide-mobile">PD</th><th class="hide-mobile">FF</th><th>EPT Points</th>`;
+    }
+    function nflDefRow(p, i) {
+      const rank = i+1, rc = rank<=3 ? `rank-${rank}` : "";
+      return `<tr class="player-row" data-index="${i}">
+        <td class="rank ${rc}">${rank}</td>
+        <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team} &middot; ${p.pos}</div></div></div></td>
+        <td class="stat-val">${p.games}</td><td class="stat-val">${p.tackles}</td>
+        <td class="stat-val">${p.sacks}</td><td class="stat-val">${p.int}</td>
+        <td class="stat-val hide-mobile">${p.tfl}</td><td class="stat-val hide-mobile">${p.pd}</td>
+        <td class="stat-val hide-mobile">${p.ff}</td><td class="ept-rating">${p.ept}</td>
+      </tr>
+      <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+        <h4>${p.name} — ${p.team} (${p.pos})</h4>
+        <div class="detail-grid">
+          <div class="detail-item"><div class="di-label">TACKLES</div><div class="di-value">${p.tackles}</div></div>
+          <div class="detail-item"><div class="di-label">SOLO</div><div class="di-value">${p.soloTackles}</div></div>
+          <div class="detail-item"><div class="di-label">SACKS</div><div class="di-value">${p.sacks}</div></div>
+          <div class="detail-item"><div class="di-label">TFL</div><div class="di-value">${p.tfl}</div></div>
+          <div class="detail-item"><div class="di-label">INT</div><div class="di-value">${p.int}</div></div>
+          <div class="detail-item"><div class="di-label">PD</div><div class="di-value">${p.pd}</div></div>
+          <div class="detail-item"><div class="di-label">FF</div><div class="di-value">${p.ff}</div></div>
+          <div class="detail-item"><div class="di-label">FR</div><div class="di-value">${p.fr}</div></div>
+          <div class="detail-item"><div class="di-label">DEF TD</div><div class="di-value">${p.defTD}</div></div>
+        </div>
+      </div></td></tr>`;
+    }
+
+    function nflKHeaders() {
+      return `<th>#</th><th>Player</th><th>G</th><th>FGM</th><th>FGA</th><th>FG%</th>
+        <th class="hide-mobile">XPM</th><th class="hide-mobile">XPA</th><th class="hide-mobile">PTS</th><th>EPT Points</th>`;
+    }
+    function nflKRow(p, i) {
+      const rank = i+1, rc = rank<=3 ? `rank-${rank}` : "";
+      return `<tr class="player-row" data-index="${i}">
+        <td class="rank ${rc}">${rank}</td>
+        <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team}</div></div></div></td>
+        <td class="stat-val">${p.games}</td><td class="stat-val">${p.fgm}</td>
+        <td class="stat-val">${p.fga}</td><td class="stat-val">${p.fgPct}%</td>
+        <td class="stat-val hide-mobile">${p.xpm}</td><td class="stat-val hide-mobile">${p.xpa}</td>
+        <td class="stat-val hide-mobile">${p.points}</td><td class="ept-rating">${p.ept}</td>
+      </tr>
+      <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+        <h4>${p.name} — ${p.team}</h4>
+        <div class="detail-grid">
+          <div class="detail-item"><div class="di-label">FGM</div><div class="di-value">${p.fgm}</div></div>
+          <div class="detail-item"><div class="di-label">FGA</div><div class="di-value">${p.fga}</div></div>
+          <div class="detail-item"><div class="di-label">FG%</div><div class="di-value">${p.fgPct}%</div></div>
+          <div class="detail-item"><div class="di-label">LONG</div><div class="di-value">${p.longFG}</div></div>
+          <div class="detail-item"><div class="di-label">XPM</div><div class="di-value">${p.xpm}</div></div>
+          <div class="detail-item"><div class="di-label">XPA</div><div class="di-value">${p.xpa}</div></div>
+          <div class="detail-item"><div class="di-label">POINTS</div><div class="di-value">${p.points}</div></div>
+        </div>
+      </div></td></tr>`;
+    }
+
+    // ─── NHL Table ───
+    function renderNHLTable(players) {
+      let html = `<table class="player-table"><thead><tr>
+        <th>#</th><th>Player</th><th class="sortable" data-sort="gp">GP</th><th class="sortable" data-sort="goals">G</th><th class="sortable" data-sort="assists">A</th><th class="sortable" data-sort="points">PTS</th>
+        <th class="hide-mobile sortable" data-sort="plusMinus">+/-</th><th class="hide-mobile sortable" data-sort="pim">PIM</th><th class="hide-mobile">POS</th><th class="sortable sort-desc" data-sort="ept">EPT Points</th>
+      </tr></thead><tbody>`;
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i], rank = i + 1;
+        let rc = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+        html += `
+          <tr class="player-row" data-index="${i}">
+            <td class="rank ${rc}">${rank}</td>
+            <td><div class="player-cell">${headshot(p.img)}<div><div class="player-name">${p.name}${injuryBadge(p.name)}</div><div class="player-team">${p.team}</div></div></div></td>
+            <td class="stat-val">${p.gp}</td><td class="stat-val">${p.goals}</td>
+            <td class="stat-val">${p.assists}</td><td class="stat-val">${p.points}</td>
+            <td class="stat-val hide-mobile">${p.plusMinus > 0 ? '+' : ''}${p.plusMinus}</td><td class="stat-val hide-mobile">${p.pim}</td>
+            <td class="stat-val hide-mobile">${p.pos}</td><td class="ept-rating">${p.ept}</td>
+          </tr>
+          <tr class="detail-row" data-index="${i}"><td colspan="10"><div class="detail-content">
+            <h4>${p.name} — ${p.team} (${p.pos})</h4>
+            <div class="detail-grid">
+              <div class="detail-item"><div class="di-label">GP</div><div class="di-value">${p.gp}</div></div>
+              <div class="detail-item"><div class="di-label">Goals</div><div class="di-value">${p.goals}</div></div>
+              <div class="detail-item"><div class="di-label">Assists</div><div class="di-value">${p.assists}</div></div>
+              <div class="detail-item"><div class="di-label">Points</div><div class="di-value">${p.points}</div></div>
+              <div class="detail-item"><div class="di-label">+/-</div><div class="di-value">${p.plusMinus > 0 ? '+' : ''}${p.plusMinus}</div></div>
+              <div class="detail-item"><div class="di-label">PIM</div><div class="di-value">${p.pim}</div></div>
+              <div class="detail-item"><div class="di-label">PPG</div><div class="di-value">${p.ppg}</div></div>
+              <div class="detail-item"><div class="di-label">APG</div><div class="di-value">${p.apg}</div></div>
+            </div>
+          </div></td></tr>`;
+      }
+      return html + `</tbody></table>`;
+    }
+
+    function renderNFLPositionTable(players, group) {
+      let headersFn, rowFn;
+      if (group === "qb") { headersFn = nflQBHeaders; rowFn = nflQBRow; }
+      else if (group === "def") { headersFn = nflDefHeaders; rowFn = nflDefRow; }
+      else if (group === "k") { headersFn = nflKHeaders; rowFn = nflKRow; }
+      else { headersFn = nflSkillHeaders; rowFn = nflSkillRow; }
+
+      let html = `<table class="player-table"><thead><tr>${headersFn()}</tr></thead><tbody>`;
+      for (let i = 0; i < players.length; i++) html += rowFn(players[i], i);
+      return html + `</tbody></table>`;
+    }
+
+    // ─── Seasons ───
+    function getNBASeason() {
+      const now = new Date(), year = now.getFullYear(), month = now.getMonth();
+      const startYear = month >= 9 ? year : year - 1;
+      return `${startYear}-${String((startYear + 1) % 100).padStart(2, "0")}`;
+    }
+    function getMLBSeason() {
+      const now = new Date(), year = now.getFullYear(), month = now.getMonth();
+      return month >= 3 ? year : year - 1; // MLB starts late March/April
+    }
+    function getNFLSeason() {
+      const now = new Date(), year = now.getFullYear(), month = now.getMonth();
+      return month >= 8 ? year : year - 1; // NFL season starts Sep
+    }
+    function getNHLSeason() {
+      const now = new Date(), year = now.getFullYear(), month = now.getMonth();
+      const startYear = month >= 9 ? year : year - 1; // NHL starts Oct
+      return `${startYear}${startYear + 1}`;
+    }
+    function getNHLSeasonDisplay() {
+      const s = getNHLSeason();
+      return `${s.slice(0,4)}-${s.slice(6,8)}`;
+    }
+
+    // ─── EPT Formulas ───
+    function calcNBAEPT(pts, reb, ast, stl, blk, tov) {
+      return +(pts * 1.5 + reb * 1.5 + ast * 1.5 + stl * 3 + blk * 3 - tov * 1.5).toFixed(1);
+    }
+    function calcMLBEPT(hits, hr, rbi, runs, sb, bb) {
+      return +(hits * 1.5 + hr * 4 + rbi * 1.5 + runs * 1.5 + sb * 3 + bb * 1).toFixed(1);
+    }
+    function calcPitcherEPT(p) {
+      // (W × 8) + (SO × 0.5) + (SV × 5) - (L × 4) - (ER × 0.8) + (IP × 0.5) - (BB × 0.5)
+      return +((p.wins * 8) + (p.so * 0.5) + (p.saves * 5) - (p.losses * 4) - (p.er * 0.8) + (p.ipNum * 0.5) - (p.bb * 0.5)).toFixed(1);
+    }
+    // NFL EPT per position:
+    function calcQBEPT(p) {
+      // (Pass YDS * 0.04) + (Pass TD * 6) - (INT * 4) + (Rush YDS * 0.1) + (Rush TD * 6)
+      return +((p.passYds * 0.04) + (p.passTD * 6) - (p.int * 4) + (p.rushYds * 0.1) + (p.rushTD * 6)).toFixed(1);
+    }
+    function calcSkillEPT(p) {
+      // (Rush YDS * 0.1) + (Rec YDS * 0.1) + (Total TD * 6) + (REC * 0.5) - (FUM * 4)
+      return +((p.rushYds * 0.1) + (p.recYds * 0.1) + (p.totalTD * 6) + (p.receptions * 0.5) - (p.fumbles * 4)).toFixed(1);
+    }
+    function calcDefEPT(p) {
+      // (Tackles * 1) + (Sacks * 4) + (INT * 6) + (TFL * 2) + (FF * 4) + (PD * 2) + (DEF TD * 6)
+      return +((p.tackles * 1) + (p.sacks * 4) + (p.int * 6) + (p.tfl * 2) + (p.ff * 4) + (p.pd * 2) + (p.defTD * 6)).toFixed(1);
+    }
+    function calcKickerEPT(p) {
+      // (FGM * 3) + (XPM * 1) + (Long FG * 0.1) - ((FGA - FGM) * 2)
+      return +((p.fgm * 3) + (p.xpm * 1) + (p.longFG * 0.1) - ((p.fga - p.fgm) * 2)).toFixed(1);
+    }
+    // NHL Skater EPT: (G × 3) + (A × 2) + (+/- × 0.5) - (PIM × 0.3)
+    function calcNHLEPT(goals, assists, plusMinus, pim) {
+      return +(goals * 3 + assists * 2 + plusMinus * 0.5 - pim * 0.3).toFixed(1);
+    }
+
+    // ─── Fetch NBA Stats ───
+    async function fetchNBAStats() {
+      const season = getNBASeason();
+      const nbaUrl = `https://stats.nba.com/stats/leagueLeaders?ActiveFlag=&LeagueID=00&PerMode=Totals&Scope=S&Season=${season}&SeasonType=Regular+Season&StatCategory=PTS`;
+      let resp;
+      try { resp = await fetch("/api/stats"); if (resp.ok) return await resp.json(); } catch (e) {}
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(nbaUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(nbaUrl)}`,
+        `https://proxy.cors.sh/${nbaUrl}`,
+      ];
+      for (const proxyUrl of proxies) {
+        try { resp = await fetch(proxyUrl, { headers: { 'Origin': window.location.origin } }); if (resp.ok) break; } catch (e) {}
+      }
+      if (!resp || !resp.ok) throw new Error("Could not fetch NBA stats. Try refreshing.");
+      const nbaData = await resp.json();
+      const headers = nbaData.resultSet.headers, rows = nbaData.resultSet.rowSet;
+      const idx = {}; headers.forEach((h, i) => (idx[h] = i));
+      const players = rows.map(r => {
+        const gp=r[idx["GP"]]??0, pts=r[idx["PTS"]]??0, reb=r[idx["REB"]]??0, ast=r[idx["AST"]]??0;
+        const stl=r[idx["STL"]]??0, blk=r[idx["BLK"]]??0, tov=r[idx["TOV"]]??0;
+        const fgm=r[idx["FGM"]]??0, fga=r[idx["FGA"]]??0, fg3m=r[idx["FG3M"]]??0, fg3a=r[idx["FG3A"]]??0;
+        const ftm=r[idx["FTM"]]??0, fta=r[idx["FTA"]]??0;
+        const fgPct=r[idx["FG_PCT"]]??(fga?fgm/fga:0), ftPct=r[idx["FT_PCT"]]??(fta?ftm/fta:0);
+        const tpPct=r[idx["FG3_PCT"]]??(fg3a?fg3m/fg3a:0);
+        const pid = r[idx["PLAYER_ID"]];
+        return {
+          name: r[idx["PLAYER"]], team: r[idx["TEAM"]],
+          img: pid ? `https://cdn.nba.com/headshots/nba/latest/260x190/${pid}.png` : "",
+          gp, pts, reb, ast, stl, blk, tov, fgm, fga, fg3m, fg3a, ftm, fta,
+          fgPct: +(fgPct*100).toFixed(1), ftPct: +(ftPct*100).toFixed(1), tpPct: +(tpPct*100).toFixed(1),
+          ppg: avg(pts,gp), rpg: avg(reb,gp), apg: avg(ast,gp),
+          spg: avg(stl,gp), bpg: avg(blk,gp), topg: avg(tov,gp),
+          ept: calcNBAEPT(pts, reb, ast, stl, blk, tov),
+        };
+      });
+      players.sort((a, b) => b.ept - a.ept);
+      return { players: players.slice(0, 25), allPlayers: players, season, updatedAt: new Date().toISOString() };
+    }
+
+    // ─── Fetch MLB Stats (Hitting + Pitching) ───
+    async function fetchMLBStats() {
+      const season = getMLBSeason();
+
+      async function mlbFetch(url) {
+        let resp;
+        try { resp = await fetch(url); } catch (e) {}
+        if (!resp || !resp.ok) {
+          const proxies = [`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,`https://corsproxy.io/?${encodeURIComponent(url)}`];
+          for (const proxyUrl of proxies) { try { resp = await fetch(proxyUrl); if (resp.ok) break; } catch (e) {} }
+        }
+        if (!resp || !resp.ok) return null;
+        return await resp.json();
+      }
+
+      const [hittingData, pitchingData] = await Promise.all([
+        mlbFetch(`https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season=${season}&sortStat=hits&order=desc&limit=200&sportId=1`),
+        mlbFetch(`https://statsapi.mlb.com/api/v1/stats?stats=season&group=pitching&season=${season}&sortStat=earnedRunAverage&order=asc&limit=200&sportId=1`),
+      ]);
+
+      if (!hittingData && !pitchingData) throw new Error("Could not fetch MLB stats. Try refreshing.");
+
+      // Parse hitters
+      const hitters = [];
+      if (hittingData?.stats?.[0]?.splits) {
+        for (const s of hittingData.stats[0].splits) {
+          const st = s.stat;
+          const hits=st.hits??0, hr=st.homeRuns??0, rbi=st.rbi??0, runs=st.runs??0;
+          const sb=st.stolenBases??0, bb=st.baseOnBalls??0, ab=st.atBats??0;
+          const doubles=st.doubles??0, triples=st.triples??0, games=st.gamesPlayed??0;
+          const mlbPid = s.player.id;
+          hitters.push({
+            name: s.player.fullName, team: s.team ? s.team.name : "—",
+            img: mlbPid ? `https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/${mlbPid}/headshot/67/current` : "",
+            games, ab, runs, hits, doubles, triples, hr, rbi, sb, bb,
+            avg: st.avg??".000", obp: st.obp??".000", slg: st.slg??".000", ops: st.ops??".000",
+            ept: calcMLBEPT(hits, hr, rbi, runs, sb, bb),
+          });
+        }
+      }
+      hitters.sort((a, b) => b.ept - a.ept);
+
+      // Parse pitchers
+      const pitchers = [];
+      if (pitchingData?.stats?.[0]?.splits) {
+        for (const s of pitchingData.stats[0].splits) {
+          const st = s.stat;
+          const wins=st.wins??0, losses=st.losses??0, so=st.strikeOuts??0;
+          const er=st.earnedRuns??0, bb=st.baseOnBalls??0, saves=st.saves??0;
+          const ip=st.inningsPitched??"0", hits=st.hits??0, hr=st.homeRuns??0;
+          const ipNum = parseFloat(ip) || 0;
+          const games=st.gamesPlayed??0;
+          const pitPid = s.player.id;
+          const p = {
+            name: s.player.fullName, team: s.team ? s.team.name : "—",
+            img: pitPid ? `https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/${pitPid}/headshot/67/current` : "",
+            games, wins, losses, so, er, bb, saves, hits, hr,
+            ip, ipNum,
+            era: st.era??"0.00", whip: st.whip??"0.00",
+            k9: st.strikeoutsPer9Inn??"0.00",
+          };
+          p.ept = calcPitcherEPT(p);
+          pitchers.push(p);
+        }
+      }
+      pitchers.sort((a, b) => b.ept - a.ept);
+
+      return {
+        groups: { hitting: hitters.slice(0, 25), pitching: pitchers.slice(0, 25) },
+        allHitters: hitters, allPitchers: pitchers,
+        season, updatedAt: new Date().toISOString(),
+      };
+    }
+
+    // ─── NFL Team Map (ID → abbreviation) ───
+    const NFL_TEAMS = {
+      1:"ATL",2:"BUF",3:"CHI",4:"CIN",5:"CLE",6:"DAL",7:"DEN",8:"DET",9:"GB",10:"TEN",
+      11:"IND",12:"KC",13:"LV",14:"LAR",15:"MIA",16:"MIN",17:"NE",18:"NO",19:"NYG",20:"NYJ",
+      21:"PHI",22:"ARI",23:"PIT",24:"LAC",25:"SF",26:"SEA",27:"TB",28:"WSH",29:"CAR",30:"JAX",
+      33:"BAL",34:"HOU"
+    };
+
+    // ─── Fetch NFL Stats from ESPN Core API ───
+    async function fetchNFLStats() {
+      const season = getNFLSeason();
+      const BASE = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl";
+
+      async function coreFetch(url) {
+        let resp;
+        try { resp = await fetch(url); } catch(e) {}
+        if (!resp || !resp.ok) {
+          const proxies = [`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,`https://corsproxy.io/?${encodeURIComponent(url)}`];
+          for (const p of proxies) { try { resp = await fetch(p); if (resp.ok) break; } catch(e) {} }
+        }
+        if (!resp || !resp.ok) return null;
+        return await resp.json();
+      }
+
+      // Step 1: Fetch leaders to identify top athletes per category
+      const leadersData = await coreFetch(`${BASE}/seasons/${season}/types/2/leaders?limit=50`);
+      if (!leadersData || !leadersData.categories) throw new Error("Could not fetch NFL stats.");
+
+      // Collect unique athlete IDs + team IDs from relevant categories
+      // Higher limits on receiving cats to capture enough TEs (mixed in with WRs)
+      const wantedCats = {
+        passingYards: 12, rushingYards: 12,
+        receivingYards: 40, receptions: 40, receivingTouchdowns: 30,
+        totalTackles: 15, sacks: 12, interceptions: 10, passesDefended: 10,
+        totalPoints: 10,
+      };
+      const athleteInfo = {}; // id -> { teamId }
+      for (const cat of leadersData.categories) {
+        const limit = wantedCats[cat.name];
+        if (!limit) continue;
+        for (const leader of (cat.leaders || []).slice(0, limit)) {
+          const aRef = leader.athlete?.["$ref"] || "";
+          const tRef = leader.team?.["$ref"] || "";
+          const aid = aRef.split("/athletes/")[1]?.split("?")[0];
+          const tid = tRef.split("/teams/")[1]?.split("?")[0];
+          if (!aid) continue;
+          if (!athleteInfo[aid]) athleteInfo[aid] = { teamId: tid };
+          if (tid) athleteInfo[aid].teamId = tid;
+        }
+      }
+
+      // Step 2: Fetch athlete bio (name + position) AND full stats in parallel
+      const aids = Object.keys(athleteInfo);
+      const allPlayers = { qb: [], rb: [], wr: [], te: [], def: [], k: [] };
+      const defPositions = new Set(["DE","DT","LB","ILB","OLB","MLB","CB","SS","FS","S","DB","NT","DL"]);
+
+      const batchSize = 20;
+      for (let i = 0; i < aids.length; i += batchSize) {
+        const batch = aids.slice(i, i + batchSize);
+        const results = await Promise.all(batch.flatMap(aid => [
+          coreFetch(`${BASE}/athletes/${aid}`),
+          coreFetch(`${BASE}/seasons/${season}/types/2/athletes/${aid}/statistics/0`),
+        ]));
+
+        for (let j = 0; j < batch.length; j++) {
+          const bio = results[j * 2];
+          const statsData = results[j * 2 + 1];
+          if (!bio || !statsData) continue;
+          const aid = batch[j];
+          const name = bio.displayName || "Unknown";
+          const pos = bio.position?.abbreviation || "?";
+          const team = NFL_TEAMS[+athleteInfo[aid].teamId] || "—";
+          const img = `https://a.espncdn.com/i/headshots/nfl/players/full/${aid}.png`;
+
+          // Extract stats keyed by category to avoid name collisions
+          const catStats = {};
+          const splits = statsData.splits;
+          if (!splits?.categories) continue;
+          for (const cat of splits.categories) {
+            catStats[cat.name] = {};
+            for (const stat of (cat.stats || [])) {
+              catStats[cat.name][stat.name] = +stat.value || 0;
+            }
+          }
+          const gen = catStats.general || {};
+          const pass = catStats.passing || {};
+          const rush = catStats.rushing || {};
+          const rec = catStats.receiving || {};
+          const def_ = catStats.defensive || {};
+          const defInt = catStats.defensiveInterceptions || {};
+          const kick = catStats.kicking || {};
+          const score = catStats.scoring || {};
+
+          const gp = gen.gamesPlayed || pass.teamGamesPlayed || rush.teamGamesPlayed || def_.teamGamesPlayed || 0;
+
+          if (pos === "QB" && (pass.passingYards || 0) > 0) {
+            const p = {
+              name, team, pos, img, games: gp,
+              cmp: pass.completions || 0, att: pass.passingAttempts || 0,
+              cmpPct: +(pass.completionPct || 0).toFixed(1),
+              passYds: pass.passingYards || 0, passTD: pass.passingTouchdowns || 0,
+              int: pass.interceptions || 0, rating: +(pass.QBRating || 0).toFixed(1),
+              rushYds: rush.rushingYards || 0, rushTD: rush.rushingTouchdowns || 0,
+              sacked: pass.sacks || 0,
+            };
+            p.ept = calcQBEPT(p);
+            allPlayers.qb.push(p);
+          } else if (["RB","FB"].includes(pos)) {
+            const p = {
+              name, team, pos, img, games: gp,
+              rushAtt: rush.rushingAttempts || 0, rushYds: rush.rushingYards || 0, rushTD: rush.rushingTouchdowns || 0,
+              receptions: rec.receptions || 0, recYds: rec.receivingYards || 0, recTD: rec.receivingTouchdowns || 0,
+              totalTD: (rush.rushingTouchdowns || 0) + (rec.receivingTouchdowns || 0),
+              fumbles: gen.fumbles || gen.fumblesLost || 0,
+            };
+            p.ept = calcSkillEPT(p);
+            allPlayers.rb.push(p);
+          } else if (pos === "WR") {
+            const p = {
+              name, team, pos, img, games: gp,
+              rushAtt: rush.rushingAttempts || 0, rushYds: rush.rushingYards || 0, rushTD: rush.rushingTouchdowns || 0,
+              receptions: rec.receptions || 0, recYds: rec.receivingYards || 0, recTD: rec.receivingTouchdowns || 0,
+              totalTD: (rush.rushingTouchdowns || 0) + (rec.receivingTouchdowns || 0),
+              fumbles: gen.fumbles || gen.fumblesLost || 0,
+            };
+            p.ept = calcSkillEPT(p);
+            allPlayers.wr.push(p);
+          } else if (pos === "TE") {
+            const p = {
+              name, team, pos, img, games: gp,
+              rushAtt: rush.rushingAttempts || 0, rushYds: rush.rushingYards || 0, rushTD: rush.rushingTouchdowns || 0,
+              receptions: rec.receptions || 0, recYds: rec.receivingYards || 0, recTD: rec.receivingTouchdowns || 0,
+              totalTD: (rush.rushingTouchdowns || 0) + (rec.receivingTouchdowns || 0),
+              fumbles: gen.fumbles || gen.fumblesLost || 0,
+            };
+            p.ept = calcSkillEPT(p);
+            allPlayers.te.push(p);
+          } else if (defPositions.has(pos)) {
+            const p = {
+              name, team, pos, img, games: gp,
+              tackles: def_.totalTackles || 0, soloTackles: def_.soloTackles || 0,
+              sacks: +(def_.sacks || 0).toFixed(1), tfl: def_.tacklesForLoss || def_.stuffs || 0,
+              int: defInt.interceptions || 0, pd: def_.passesDefended || def_.passesBattedDown || 0,
+              ff: gen.fumblesForced || 0, fr: gen.fumblesRecovered || 0,
+              defTD: def_.miscTouchdowns || 0,
+            };
+            p.ept = calcDefEPT(p);
+            allPlayers.def.push(p);
+          } else if (pos === "K" || pos === "PK") {
+            const p = {
+              name, team, pos: "K", img, games: gp,
+              fgm: kick.fieldGoalsMade || 0, fga: kick.fieldGoalAttempts || kick.fieldGoalsAttempted || 0,
+              fgPct: +(kick.fieldGoalPct || 0).toFixed(1),
+              longFG: kick.longFieldGoalMade || 0,
+              xpm: kick.extraPointsMade || 0, xpa: kick.extraPointAttempts || kick.extraPointsAttempted || 0,
+              points: kick.totalKickingPoints || ((kick.fieldGoalsMade||0)*3 + (kick.extraPointsMade||0)),
+            };
+            p.ept = calcKickerEPT(p);
+            allPlayers.k.push(p);
+          }
+        }
+      }
+
+      // Sort each group by EPT and build combined list for search
+      const nflAllPlayersList = [];
+      for (const key of Object.keys(allPlayers)) {
+        allPlayers[key].sort((a, b) => b.ept - a.ept);
+        nflAllPlayersList.push(...allPlayers[key]);
+        allPlayers[key] = allPlayers[key].slice(0, 10);
+      }
+      nflAllPlayersList.sort((a, b) => b.ept - a.ept);
+
+      return { groups: allPlayers, allPlayers: nflAllPlayersList, season, updatedAt: new Date().toISOString() };
+    }
+
+    // ─── Fetch NHL Stats (Skaters only, no goalies) ───
+    async function fetchNHLStats() {
+      const season = getNHLSeason();
+      const BASE = `https://api-web.nhle.com/v1/skater-stats-leaders/${season}/2`;
+
+      async function nhlFetch(url) {
+        let resp;
+        try { resp = await fetch(url); } catch (e) {}
+        if (!resp || !resp.ok) {
+          const proxies = [`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,`https://corsproxy.io/?${encodeURIComponent(url)}`];
+          for (const p of proxies) { try { resp = await fetch(p); if (resp.ok) break; } catch (e) {} }
+        }
+        if (!resp || !resp.ok) return null;
+        return await resp.json();
+      }
+
+      // Fetch multiple stat categories in parallel
+      const [pointsData, goalsData, assistsData, plusMinusData, pimData] = await Promise.all([
+        nhlFetch(`${BASE}?categories=points&limit=200`),
+        nhlFetch(`${BASE}?categories=goals&limit=200`),
+        nhlFetch(`${BASE}?categories=assists&limit=200`),
+        nhlFetch(`${BASE}?categories=plusMinus&limit=200`),
+        nhlFetch(`${BASE}?categories=penaltyMins&limit=200`),
+      ]);
+
+      if (!pointsData) throw new Error("Could not fetch NHL stats. Try refreshing.");
+
+      // Build a map of player data from points leaders (our base list)
+      const playerMap = {};
+      for (const p of (pointsData.points || [])) {
+        if (p.position === "G") continue; // skip goalies
+        playerMap[p.id] = {
+          id: p.id,
+          name: `${p.firstName.default} ${p.lastName.default}`,
+          team: p.teamAbbrev,
+          pos: p.position,
+          img: p.headshot || "",
+          points: p.value || 0,
+          goals: 0, assists: 0, plusMinus: 0, pim: 0,
+        };
+      }
+
+      // Merge goals
+      if (goalsData?.goals) {
+        for (const p of goalsData.goals) {
+          if (playerMap[p.id]) playerMap[p.id].goals = p.value || 0;
+        }
+      }
+      // Merge assists
+      if (assistsData?.assists) {
+        for (const p of assistsData.assists) {
+          if (playerMap[p.id]) playerMap[p.id].assists = p.value || 0;
+        }
+      }
+      // Merge +/-
+      if (plusMinusData?.plusMinus) {
+        for (const p of plusMinusData.plusMinus) {
+          if (playerMap[p.id]) playerMap[p.id].plusMinus = p.value || 0;
+        }
+      }
+      // Merge PIM
+      if (pimData?.penaltyMins) {
+        for (const p of pimData.penaltyMins) {
+          if (playerMap[p.id]) playerMap[p.id].pim = p.value || 0;
+        }
+      }
+
+      // For players where we have points but missing goals/assists, derive the missing one
+      const players = Object.values(playerMap).map(p => {
+        if (p.goals === 0 && p.assists === 0 && p.points > 0) {
+          // Can't determine split, leave as-is
+        } else if (p.goals > 0 && p.assists === 0 && p.points > p.goals) {
+          p.assists = p.points - p.goals;
+        } else if (p.assists > 0 && p.goals === 0 && p.points > p.assists) {
+          p.goals = p.points - p.assists;
+        }
+        p.gp = "—"; // GP not available from leaders endpoint
+        p.ept = calcNHLEPT(p.goals, p.assists, p.plusMinus, p.pim);
+        p.ppg = p.points > 0 ? (p.points / 58).toFixed(2) : "—"; // approximate
+        p.apg = p.assists > 0 ? (p.assists / 58).toFixed(2) : "—";
+        return p;
+      });
+
+      // Now fetch GP for each player from their individual landing pages (top 25 only)
+      players.sort((a, b) => b.ept - a.ept);
+      const top25 = players.slice(0, 25);
+
+      // Fetch GP in batches
+      const gpBatchSize = 10;
+      for (let i = 0; i < top25.length; i += gpBatchSize) {
+        const batch = top25.slice(i, i + gpBatchSize);
+        const results = await Promise.all(
+          batch.map(p => nhlFetch(`https://api-web.nhle.com/v1/player/${p.id}/landing`))
+        );
+        for (let j = 0; j < batch.length; j++) {
+          const data = results[j];
+          if (data?.featuredStats?.regularSeason?.subSeason) {
+            const ss = data.featuredStats.regularSeason.subSeason;
+            batch[j].gp = ss.gamesPlayed ?? "—";
+            // Update with accurate stats from landing
+            if (ss.goals != null) batch[j].goals = ss.goals;
+            if (ss.assists != null) batch[j].assists = ss.assists;
+            if (ss.points != null) batch[j].points = ss.points;
+            if (ss.plusMinus != null) batch[j].plusMinus = ss.plusMinus;
+            if (ss.pim != null) batch[j].pim = ss.pim;
+            batch[j].ept = calcNHLEPT(batch[j].goals, batch[j].assists, batch[j].plusMinus, batch[j].pim);
+            const gp = batch[j].gp !== "—" ? batch[j].gp : 1;
+            batch[j].ppg = (batch[j].points / gp).toFixed(2);
+            batch[j].apg = (batch[j].assists / gp).toFixed(2);
+          }
+        }
+      }
+
+      // Re-sort after updated stats
+      top25.sort((a, b) => b.ept - a.ept);
+
+      return { players: top25, allPlayers: players, season: getNHLSeasonDisplay(), updatedAt: new Date().toISOString() };
+    }
+
+    // ─── Game of the Week ───
+    const GOTW_SPORT_MAP = {
+      nba: "basketball/nba",
+      nhl: "hockey/nhl",
+      nfl: "football/nfl",
+      mlb: "baseball/mlb",
+    };
+
+    async function fetchGameOfTheWeek(sport) {
+      const espnPath = GOTW_SPORT_MAP[sport];
+      if (!espnPath) return null;
+
+      // Weekly window: Monday through Sunday
+      // If today is Sun, the window is Mon..today
+      // Otherwise the window is last Mon..coming Sun
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ...
+      const monday = new Date(today);
+      if (dayOfWeek === 0) {
+        monday.setDate(today.getDate() - 6); // Sun -> prev Mon
+      } else {
+        monday.setDate(today.getDate() - (dayOfWeek - 1)); // back to Mon
+      }
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      const dates = [];
+      for (let d = 0; d < 7; d++) {
+        const dt = new Date(monday);
+        dt.setDate(monday.getDate() + d);
+        const y = dt.getFullYear(), m = String(dt.getMonth()+1).padStart(2,"0"), day = String(dt.getDate()).padStart(2,"0");
+        dates.push(`${y}${m}${day}`);
+      }
+
+      const allGames = [];
+      // Fetch in batches of 3 to avoid overwhelming
+      for (let i = 0; i < dates.length; i += 3) {
+        const batch = dates.slice(i, i + 3);
+        const results = await Promise.all(batch.map(async d => {
+          const url = `https://site.api.espn.com/apis/site/v2/sports/${espnPath}/scoreboard?dates=${d}`;
+          try {
+            let resp = await fetch(url);
+            if (!resp.ok) {
+              const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+              resp = await fetch(proxy);
+            }
+            if (resp.ok) return await resp.json();
+          } catch (e) {}
+          return null;
+        }));
+        for (const data of results) {
+          if (!data?.events) continue;
+          for (const ev of data.events) {
+            const comp = ev.competitions?.[0];
+            if (!comp) continue;
+            const status = comp.status?.type?.name || ev.status?.type?.name || "";
+            const isFinal = status === "STATUS_FINAL";
+            const isScheduled = status === "STATUS_SCHEDULED" || status === "STATUS_PRE_EVENT";
+            if (!isFinal && !isScheduled) continue;
+            const teams = comp.competitors || [];
+            if (teams.length < 2) continue;
+            const t1 = teams[0], t2 = teams[1];
+            const s1 = isFinal ? (parseInt(t1.score) || 0) : null;
+            const s2 = isFinal ? (parseInt(t2.score) || 0) : null;
+            const diff = isFinal ? Math.abs(s1 - s2) : 0;
+            const r1 = t1.records?.[0]?.summary || "0-0";
+            const r2 = t2.records?.[0]?.summary || "0-0";
+            const parseRec = r => { const p = r.split("-"); return { w: parseInt(p[0])||0, l: parseInt(p[1])||0 }; };
+            const rec1 = parseRec(r1), rec2 = parseRec(r2);
+            const wp1 = rec1.w + rec1.l > 0 ? rec1.w / (rec1.w + rec1.l) : 0.5;
+            const wp2 = rec2.w + rec2.l > 0 ? rec2.w / (rec2.w + rec2.l) : 0.5;
+            const combinedWP = (wp1 + wp2) / 2;
+            // Check for marquee games (playoffs, Super Bowl, Stanley Cup, etc.)
+            const notes = comp.notes?.map(n => n.headline || "").join(" ") || "";
+            const isMarquee = /super bowl|stanley cup|world series|nba finals|playoff|championship/i.test(notes + " " + (ev.name || ""));
+            // Excitement: finished close games between good teams score high;
+            // upcoming games score by team quality; marquee games get huge bonus
+            let excitement;
+            if (isFinal) {
+              excitement = (combinedWP * 50) + Math.max(0, 100 - diff * 5);
+            } else {
+              excitement = (combinedWP * 80) + 50; // upcoming games: team quality matters most
+            }
+            if (isMarquee) excitement += 200; // marquee games always win
+            const headline = comp.headlines?.[0]?.shortLinkText
+              || comp.headlines?.[0]?.description
+              || notes
+              || "";
+            allGames.push({
+              excitement,
+              diff,
+              isFinal,
+              date: ev.date,
+              name: ev.name || `${t1.team?.displayName} vs ${t2.team?.displayName}`,
+              headline,
+              away: {
+                name: t2.team?.displayName || t2.team?.name || "Away",
+                abbrev: t2.team?.abbreviation || "",
+                logo: t2.team?.logo || "",
+                score: s2,
+                record: r2,
+                winner: isFinal ? (t2.winner || false) : false,
+              },
+              home: {
+                name: t1.team?.displayName || t1.team?.name || "Home",
+                abbrev: t1.team?.abbreviation || "",
+                logo: t1.team?.logo || "",
+                score: s1,
+                record: r1,
+                winner: isFinal ? (t1.winner || false) : false,
+              },
+            });
+          }
+        }
+      }
+
+      if (!allGames.length) return null;
+      allGames.sort((a, b) => b.excitement - a.excitement);
+      return allGames[0];
+    }
+
+    function renderGameOfTheWeek(game) {
+      const el = document.getElementById("game-of-week");
+      if (!game) { el.style.display = "none"; return; }
+      const away = game.away, home = game.home;
+      const gameDate = new Date(game.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+      const timeStr = !game.isFinal ? " at " + new Date(game.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
+
+      let scoreHtml;
+      if (game.isFinal) {
+        scoreHtml = `
+          <span class="gotw-score-val${away.winner ? ' winner' : ''}">${away.score}</span>
+          <span class="gotw-vs">-</span>
+          <span class="gotw-score-val${home.winner ? ' winner' : ''}">${home.score}</span>`;
+      } else {
+        scoreHtml = `<span class="gotw-vs" style="font-size:1.2rem;color:#f59e0b;">VS</span>`;
+      }
+
+      el.style.display = "block";
+      el.innerHTML = `
+        <div class="gotw-label">Game of the Week</div>
+        <div class="gotw-matchup">
+          <div class="gotw-team">
+            ${away.logo ? `<img src="${away.logo}" alt="${away.abbrev}" onerror="this.style.display='none'">` : ""}
+            <div class="gotw-team-name">${away.name}</div>
+            <div class="gotw-team-record">${away.record}</div>
+          </div>
+          <div class="gotw-score">
+            ${scoreHtml}
+          </div>
+          <div class="gotw-team">
+            ${home.logo ? `<img src="${home.logo}" alt="${home.abbrev}" onerror="this.style.display='none'">` : ""}
+            <div class="gotw-team-name">${home.name}</div>
+            <div class="gotw-team-record">${home.record}</div>
+          </div>
+        </div>
+        ${game.headline ? `<div class="gotw-headline">${game.headline}</div>` : ""}
+        <div class="gotw-date">${gameDate}${timeStr}${game.isFinal ? " — Final" : ""}</div>`;
+    }
+
+    // ─── Switch Sport ───
+    function switchSport(sport) {
+      if (sport === currentSport) return;
+      currentSport = sport;
+      currentNFLPos = 'qb';
+      nflCache = null;
+      currentMLBTab = 'hitting';
+      mlbCache = null;
+      nhlCache = null;
+      searchCache = [];
+      searchInput.value = "";
+      searchDropdown.classList.remove("open");
+      document.getElementById("search-result-card").style.display = "none";
+      document.getElementById("badge-nba").classList.toggle("active", sport === "nba");
+      document.getElementById("badge-mlb").classList.toggle("active", sport === "mlb");
+      document.getElementById("badge-nfl").classList.toggle("active", sport === "nfl");
+      document.getElementById("badge-nhl").classList.toggle("active", sport === "nhl");
+      loadSport();
+    }
+
+    // ─── Switch MLB Tab ───
+    function switchMLBTab(tab) {
+      if (tab === currentMLBTab) return;
+      currentMLBTab = tab;
+      document.querySelectorAll(".pos-tab").forEach(t => t.classList.toggle("active", t.dataset.pos === tab));
+      renderMLBFromCache();
+    }
+
+    function updateMLBFormula(tab) {
+      const formulaBox = document.querySelector(".formula-box");
+      const h3 = formulaBox.querySelector("h3");
+      const p = formulaBox.querySelector("p");
+      if (tab === "hitting") {
+        h3.textContent = "Hitting EPT Formula (MLB)";
+        p.innerHTML = "(H &times; 1.5) + (HR &times; 4) + (RBI &times; 1.5) + (R &times; 1.5) + (SB &times; 3) + (BB &times; 1)";
+      } else {
+        h3.textContent = "Pitching EPT Formula (MLB)";
+        p.innerHTML = "(W &times; 8) + (SO &times; 0.5) + (SV &times; 5) &minus; (L &times; 4) &minus; (ER &times; 0.8) + (IP &times; 0.5) &minus; (BB &times; 0.5)";
+      }
+    }
+
+    function renderMLBFromCache() {
+      if (!mlbCache) return;
+      const contentEl = document.getElementById("content");
+      const headingEl = document.querySelector(".top25-heading");
+      const topEl = document.getElementById("top-player");
+      const slEl = document.getElementById("stat-leaders");
+      updateMLBFormula(currentMLBTab);
+
+      if (currentMLBTab === "hitting") {
+        const players = mlbCache.groups.hitting || [];
+        headingEl.textContent = "Top 25 Hitters";
+        if (!players.length) { contentEl.innerHTML = `<div class="error-msg"><p>No hitting stats available.</p></div>`; return; }
+
+        // Stat leaders
+        const cats = [
+          {key:"hits",label:"Most Hits"},{key:"hr",label:"Most Home Runs"},{key:"rbi",label:"Most RBI"},
+          {key:"runs",label:"Most Runs"},{key:"sb",label:"Most Stolen Bases"},{key:"bb",label:"Most Walks"},
+        ];
+        let slHtml = "";
+        for (const c of cats) {
+          const l = players.reduce((b,p) => p[c.key]>b[c.key]?p:b, players[0]);
+          slHtml += `<div class="stat-leader-card"><div class="sl-category">${c.label}</div><div class="sl-value">${l[c.key]}</div><div class="sl-name">${l.name}</div><div class="sl-team">${l.team}</div></div>`;
+        }
+        slEl.innerHTML = slHtml; slEl.style.display = "grid";
+
+        const top = players[0];
+        topEl.style.display = "block";
+        topEl.innerHTML = `<div class="crown">👑</div>${top.img ? `<img class="tp-headshot" src="${top.img}" alt="" onerror="this.style.display='none'">` : ""}<div class="tp-label">#1 Hitter</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats"><div class="tp-stat"><strong>${top.hits}</strong> H</div><div class="tp-stat"><strong>${top.hr}</strong> HR</div><div class="tp-stat"><strong>${top.rbi}</strong> RBI</div><div class="tp-stat"><strong>${top.runs}</strong> R</div><div class="tp-stat"><strong>${top.sb}</strong> SB</div></div>`;
+
+        contentEl.innerHTML = renderMLBTable(players);
+      } else {
+        const players = mlbCache.groups.pitching || [];
+        headingEl.textContent = "Top 25 Pitchers";
+        if (!players.length) { contentEl.innerHTML = `<div class="error-msg"><p>No pitching stats available.</p></div>`; return; }
+
+        // Stat leaders for pitchers
+        const cats = [
+          {key:"wins",label:"Most Wins"},{key:"so",label:"Most Strikeouts"},{key:"saves",label:"Most Saves"},
+        ];
+        let slHtml = "";
+        for (const c of cats) {
+          const l = players.reduce((b,p) => p[c.key]>b[c.key]?p:b, players[0]);
+          slHtml += `<div class="stat-leader-card"><div class="sl-category">${c.label}</div><div class="sl-value">${l[c.key]}</div><div class="sl-name">${l.name}</div><div class="sl-team">${l.team}</div></div>`;
+        }
+        slEl.innerHTML = slHtml; slEl.style.display = "grid";
+
+        const top = players[0];
+        topEl.style.display = "block";
+        topEl.innerHTML = `<div class="crown">👑</div>${top.img ? `<img class="tp-headshot" src="${top.img}" alt="" onerror="this.style.display='none'">` : ""}<div class="tp-label">#1 Pitcher</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats"><div class="tp-stat"><strong>${top.wins}</strong> W</div><div class="tp-stat"><strong>${top.era}</strong> ERA</div><div class="tp-stat"><strong>${top.so}</strong> SO</div><div class="tp-stat"><strong>${top.saves}</strong> SV</div></div>`;
+
+        contentEl.innerHTML = renderMLBPitcherTable(players);
+      }
+
+      // Set current players for sorting
+      const activePlayers = currentMLBTab === "hitting" ? (mlbCache.groups.hitting || []) : (mlbCache.groups.pitching || []);
+      currentPlayers = activePlayers;
+
+      // Click-to-expand handlers
+      contentEl.querySelectorAll(".player-row").forEach(row => {
+        row.addEventListener("click", () => {
+          const detail = row.nextElementSibling;
+          if (detail && detail.classList.contains("detail-row")) detail.classList.toggle("open");
+        });
+      });
+      setupSortHeaders();
+      renderAwardsRace("mlb", mlbCache);
+    }
+
+    // ─── Switch NFL Position ───
+    function switchNFLPos(pos) {
+      if (pos === currentNFLPos) return;
+      currentNFLPos = pos;
+      document.querySelectorAll(".pos-tab").forEach(t => t.classList.toggle("active", t.dataset.pos === pos));
+      renderNFLFromCache();
+    }
+
+    function updateNFLFormula(pos) {
+      const formulaBox = document.querySelector(".formula-box");
+      const h3 = formulaBox.querySelector("h3");
+      const p = formulaBox.querySelector("p");
+      if (pos === "all") {
+        h3.textContent = "EPT Rating Formulas (NFL)";
+        p.innerHTML =
+          "QB: (Pass YDS &times; 0.04) + (Pass TD &times; 6) &minus; (INT &times; 4) + (Rush YDS &times; 0.1) + (Rush TD &times; 6)<br>" +
+          "RB/WR/TE: (Rush YDS &times; 0.1) + (Rec YDS &times; 0.1) + (TD &times; 6) + (REC &times; 0.5) &minus; (FUM &times; 4)<br>" +
+          "DEF: (TKL &times; 1) + (Sacks &times; 4) + (INT &times; 6) + (TFL &times; 2) + (FF &times; 4) + (PD &times; 2) + (TD &times; 6)<br>" +
+          "K: (FGM &times; 3) + (XPM &times; 1) + (Long &times; 0.1) &minus; (Missed FG &times; 2)";
+      } else if (pos === "qb") {
+        h3.textContent = "QB EPT Formula";
+        p.innerHTML = "(Pass YDS &times; 0.04) + (Pass TD &times; 6) &minus; (INT &times; 4) + (Rush YDS &times; 0.1) + (Rush TD &times; 6)";
+      } else if (pos === "rb" || pos === "wr" || pos === "te") {
+        const label = pos === "rb" ? "RB" : pos === "wr" ? "WR" : "TE";
+        h3.textContent = `${label} EPT Formula`;
+        p.innerHTML = "(Rush YDS &times; 0.1) + (Rec YDS &times; 0.1) + (TD &times; 6) + (REC &times; 0.5) &minus; (FUM &times; 4)";
+      } else if (pos === "def") {
+        h3.textContent = "Defensive EPT Formula";
+        p.innerHTML = "(TKL &times; 1) + (Sacks &times; 4) + (INT &times; 6) + (TFL &times; 2) + (FF &times; 4) + (PD &times; 2) + (TD &times; 6)";
+      } else if (pos === "k") {
+        h3.textContent = "Kicker EPT Formula";
+        p.innerHTML = "(FGM &times; 3) + (XPM &times; 1) + (Long &times; 0.1) &minus; (Missed FG &times; 2)";
+      }
+    }
+
+    function renderNFLFromCache() {
+      if (!nflCache) return;
+      const contentEl = document.getElementById("content");
+      const headingEl = document.querySelector(".top25-heading");
+      updateNFLFormula(currentNFLPos);
+
+      if (currentNFLPos === "all") {
+        // Show all position groups
+        headingEl.textContent = "Top 10 Players by Position";
+        let html = "";
+        for (const [key, cfg] of Object.entries(NFL_POS_GROUPS)) {
+          const players = nflCache.groups[key];
+          if (!players || !players.length) continue;
+          html += `<div class="position-section-title">${cfg.label}</div>`;
+          html += renderNFLPositionTable(players, key);
+        }
+        contentEl.innerHTML = html;
+
+        // Top player: best across all groups
+        const allBest = Object.entries(nflCache.groups)
+          .flatMap(([k, ps]) => ps.map(p => ({...p, group: k})))
+          .sort((a,b) => b.ept - a.ept);
+        if (allBest.length) {
+          const top = allBest[0];
+          const topEl = document.getElementById("top-player");
+          topEl.style.display = "block";
+          const statLabels = top.group === "qb" ? `<div class="tp-stat"><strong>${top.passYds}</strong> YDS</div><div class="tp-stat"><strong>${top.passTD}</strong> TD</div>`
+            : top.group === "def" ? `<div class="tp-stat"><strong>${top.tackles}</strong> TKL</div><div class="tp-stat"><strong>${top.sacks}</strong> SACK</div><div class="tp-stat"><strong>${top.int}</strong> INT</div>`
+            : top.group === "k" ? `<div class="tp-stat"><strong>${top.fgm}</strong> FGM</div><div class="tp-stat"><strong>${top.points}</strong> PTS</div>`
+            : `<div class="tp-stat"><strong>${top.rushYds}</strong> RUSH</div><div class="tp-stat"><strong>${top.recYds}</strong> REC</div><div class="tp-stat"><strong>${top.totalTD}</strong> TD</div>`;
+          topEl.innerHTML = `<div class="crown">👑</div>${top.img ? `<img class="tp-headshot" src="${top.img}" alt="" onerror="this.style.display='none'">` : ""}<div class="tp-label">#1 Player</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team} &middot; ${top.pos}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats">${statLabels}</div>`;
+        }
+      } else {
+        // Single position group
+        const cfg = NFL_POS_GROUPS[currentNFLPos];
+        const players = nflCache.groups[currentNFLPos] || [];
+        headingEl.textContent = `Top 10 ${cfg.label}`;
+        if (!players.length) {
+          contentEl.innerHTML = `<div class="error-msg"><p>No stats available for ${cfg.label}.</p></div>`;
+          return;
+        }
+        contentEl.innerHTML = renderNFLPositionTable(players, currentNFLPos);
+
+        const top = players[0], topEl = document.getElementById("top-player");
+        topEl.style.display = "block";
+        const statLabels = currentNFLPos === "qb" ? `<div class="tp-stat"><strong>${top.passYds}</strong> YDS</div><div class="tp-stat"><strong>${top.passTD}</strong> TD</div><div class="tp-stat"><strong>${top.int}</strong> INT</div>`
+          : currentNFLPos === "def" ? `<div class="tp-stat"><strong>${top.tackles}</strong> TKL</div><div class="tp-stat"><strong>${top.sacks}</strong> SACK</div><div class="tp-stat"><strong>${top.int}</strong> INT</div>`
+          : currentNFLPos === "k" ? `<div class="tp-stat"><strong>${top.fgm}</strong> FGM</div><div class="tp-stat"><strong>${top.points}</strong> PTS</div>`
+          : `<div class="tp-stat"><strong>${top.rushYds}</strong> RUSH</div><div class="tp-stat"><strong>${top.recYds}</strong> REC</div><div class="tp-stat"><strong>${top.totalTD}</strong> TD</div>`;
+        topEl.innerHTML = `<div class="crown">👑</div>${top.img ? `<img class="tp-headshot" src="${top.img}" alt="" onerror="this.style.display='none'">` : ""}<div class="tp-label">#1 ${cfg.label.slice(0,-1)}</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats">${statLabels}</div>`;
+      }
+
+      // Set current players for sorting (flatten all groups for NFL)
+      if (currentNFLPos === "all") {
+        currentPlayers = Object.values(nflCache.groups).flat();
+      } else {
+        currentPlayers = nflCache.groups[currentNFLPos] || [];
+      }
+
+      // Click-to-expand handlers
+      contentEl.querySelectorAll(".player-row").forEach(row => {
+        row.addEventListener("click", () => {
+          const detail = row.nextElementSibling;
+          if (detail && detail.classList.contains("detail-row")) detail.classList.toggle("open");
+        });
+      });
+      setupSortHeaders();
+      renderAwardsRace("nfl", nflCache);
+    }
+
+    // ─── Injury Badge Helper ───
+    function injuryBadge(playerName) {
+      const info = injuryMap[playerName.toLowerCase()];
+      if (!info) return "";
+      const s = info.status.toLowerCase();
+      let cls = "out", label = "OUT";
+      if (s.includes("day-to-day") || s.includes("questionable") || s.includes("game time")) {
+        cls = "dtd"; label = "DTD";
+      } else if (s.includes("doubtful")) {
+        cls = "doubtful"; label = "DBT";
+      } else if (s.includes("out") || s.includes("injured reserve") || s.includes("suspension")) {
+        cls = "out"; label = "OUT";
+      } else {
+        cls = "dtd"; label = s.toUpperCase().slice(0, 3);
+      }
+      return `<span class="injury-badge ${cls}" title="${info.type}">${label}</span>`;
+    }
+
+    // ─── Fetch Injuries ───
+    async function fetchInjuries(sport) {
+      const paths = { nba: "basketball/nba", nhl: "hockey/nhl", nfl: "football/nfl", mlb: "baseball/mlb" };
+      const path = paths[sport];
+      if (!path) return;
+      try {
+        const url = `https://site.api.espn.com/apis/site/v2/sports/${path}/injuries`;
+        let resp;
+        try { resp = await fetch(url); } catch(e) {}
+        if (!resp || !resp.ok) {
+          const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+          resp = await fetch(proxy);
+        }
+        if (!resp || !resp.ok) return;
+        const data = await resp.json();
+        injuryMap = {};
+        for (const team of (data || [])) {
+          for (const inj of (team.injuries || [])) {
+            const name = inj.athlete?.displayName;
+            if (!name) continue;
+            const status = inj.status || inj.type?.description || "Out";
+            const type = [inj.details?.type, inj.details?.location, inj.details?.detail].filter(Boolean).join(" - ") || "Injury";
+            injuryMap[name.toLowerCase()] = { status, type };
+          }
+        }
+      } catch(e) { /* injuries are non-critical */ }
+    }
+
+    // ─── Sortable Columns ───
+    function setupSortHeaders() {
+      document.querySelectorAll(".player-table th.sortable").forEach(th => {
+        th.addEventListener("click", () => {
+          const field = th.dataset.sort;
+          if (!field) return;
+          if (currentSortField === field) {
+            currentSortDir = currentSortDir === "desc" ? "asc" : "desc";
+          } else {
+            currentSortField = field;
+            currentSortDir = "desc";
+          }
+          // Update header classes
+          document.querySelectorAll(".player-table th.sortable").forEach(h => h.classList.remove("sort-asc", "sort-desc"));
+          th.classList.add(currentSortDir === "desc" ? "sort-desc" : "sort-asc");
+          // Sort and re-render
+          sortAndRerender();
+        });
+      });
+    }
+
+    function sortAndRerender() {
+      if (!currentPlayers.length) return;
+      const field = currentSortField;
+      const dir = currentSortDir === "desc" ? -1 : 1;
+      currentPlayers.sort((a, b) => {
+        let va = a[field], vb = b[field];
+        if (typeof va === "string") va = parseFloat(va) || 0;
+        if (typeof vb === "string") vb = parseFloat(vb) || 0;
+        return (va - vb) * dir;
+      });
+      const contentEl = document.getElementById("content");
+      if (currentSport === "nba") contentEl.innerHTML = renderNBATable(currentPlayers);
+      else if (currentSport === "mlb" && currentMLBTab === "hitting") contentEl.innerHTML = renderMLBTable(currentPlayers);
+      else if (currentSport === "mlb" && currentMLBTab === "pitching") contentEl.innerHTML = renderMLBPitcherTable(currentPlayers);
+      else if (currentSport === "nhl") contentEl.innerHTML = renderNHLTable(currentPlayers);
+      // Restore sort indicator
+      const activeHeader = contentEl.querySelector(`th[data-sort="${field}"]`);
+      if (activeHeader) activeHeader.classList.add(currentSortDir === "desc" ? "sort-desc" : "sort-asc");
+      // Re-attach expand handlers
+      contentEl.querySelectorAll(".player-row").forEach(row => {
+        row.addEventListener("click", () => {
+          const detail = row.nextElementSibling;
+          if (detail && detail.classList.contains("detail-row")) detail.classList.toggle("open");
+        });
+      });
+      setupSortHeaders();
+    }
+
+    // ─── Awards Race ───
+    function renderAwardsRace(sport, data) {
+      const el = document.getElementById("awards-race");
+      el.classList.remove("visible");
+      el.innerHTML = "";
+
+      function candidateHtml(players, statKey, limit) {
+        return players.slice(0, limit || 3).map((p, i) => {
+          const rc = i === 0 ? "gold" : i === 1 ? "silver" : "bronze";
+          const val = typeof p[statKey] === "number" ? p[statKey] : p[statKey];
+          return `<div class="award-candidate">
+            <div class="award-candidate-rank ${rc}">${i+1}</div>
+            ${p.img ? `<img src="${p.img}" alt="" onerror="this.style.display='none'">` : ""}
+            <div class="award-candidate-info">
+              <div class="award-candidate-name">${p.name}</div>
+              <div class="award-candidate-team">${p.team || "—"}</div>
+            </div>
+            <div class="award-candidate-stat">${val}</div>
+          </div>`;
+        }).join("");
+      }
+
+      function awardCard(title, players, statKey, statSuffix) {
+        const sorted = [...players].sort((a, b) => {
+          const va = typeof a[statKey] === "string" ? parseFloat(a[statKey]) || 0 : a[statKey];
+          const vb = typeof b[statKey] === "string" ? parseFloat(b[statKey]) || 0 : b[statKey];
+          return vb - va;
+        });
+        if (statSuffix) sorted.forEach(p => p["_display"] = p[statKey] + statSuffix);
+        return `<div class="award-card">
+          <div class="award-title">${title}</div>
+          ${candidateHtml(sorted, statSuffix ? "_display" : statKey, 3)}
+        </div>`;
+      }
+
+      let html = "";
+      if (sport === "nba") {
+        const players = data.players || [];
+        html += awardCard("MVP Race", players, "ept");
+        const dpoy = [...players].sort((a, b) => (b.stl + b.blk) - (a.stl + a.blk));
+        dpoy.forEach(p => p._dpoy = p.stl + p.blk);
+        html += `<div class="award-card"><div class="award-title">DPOY Race</div>${candidateHtml(dpoy, "_dpoy", 3)}</div>`;
+        html += awardCard("Scoring Leader", players, "pts");
+        html += awardCard("Assists Leader", players, "ast");
+      } else if (sport === "mlb") {
+        const hitters = data.allHitters || data.groups?.hitting || [];
+        const pitchers = data.allPitchers || data.groups?.pitching || [];
+        html += awardCard("MVP (Hitter)", hitters, "ept");
+        html += awardCard("Cy Young", pitchers, "ept");
+        html += awardCard("Home Run Leader", hitters, "hr");
+        html += awardCard("Stolen Base Leader", hitters, "sb");
+      } else if (sport === "nfl") {
+        const qbs = data.groups?.qb || [];
+        const skill = [...(data.groups?.rb || []), ...(data.groups?.wr || []), ...(data.groups?.te || [])].sort((a,b) => b.ept - a.ept);
+        const defs = data.groups?.def || [];
+        html += awardCard("MVP Race", qbs, "ept");
+        html += awardCard("OPOY Race", skill, "ept");
+        html += awardCard("DPOY Race", defs, "ept");
+      } else if (sport === "nhl") {
+        const players = data.allPlayers || data.players || [];
+        html += awardCard("Hart Trophy (MVP)", players, "ept");
+        html += awardCard("Rocket Richard (Goals)", players, "goals");
+        html += awardCard("Art Ross (Points)", players, "points");
+      }
+
+      if (html) {
+        el.innerHTML = html;
+        el.classList.add("visible");
+      }
+    }
+
+    // ─── Player Search ───
+    let searchDebounce = null;
+    const searchInput = document.getElementById("search-input");
+    const searchDropdown = document.getElementById("search-dropdown");
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (q.length < 2) { searchDropdown.classList.remove("open"); return; }
+        const matches = searchCache
+          .map((p, i) => ({ ...p, rank: i + 1 }))
+          .filter(p => p.name.toLowerCase().includes(q))
+          .slice(0, 8);
+        if (!matches.length) {
+          searchDropdown.innerHTML = `<div class="search-item"><div class="search-item-info"><div class="search-item-name" style="color:#5a5a7a">No players found</div></div></div>`;
+        } else {
+          searchDropdown.innerHTML = matches.map(p => `
+            <div class="search-item" data-rank="${p.rank}">
+              ${p.img ? `<img src="${p.img}" alt="" onerror="this.style.display='none'">` : `<div style="width:32px;height:32px;border-radius:50%;background:#1a1a2e;flex-shrink:0"></div>`}
+              <div class="search-item-info">
+                <div class="search-item-name">${p.name}</div>
+                <div class="search-item-sub">${p.team || "—"}${p.pos ? " · " + p.pos : ""}</div>
+              </div>
+              <div class="search-item-rank">#${p.rank}</div>
+            </div>
+          `).join("");
+        }
+        searchDropdown.classList.add("open");
+
+        // Click handlers for results
+        searchDropdown.querySelectorAll(".search-item[data-rank]").forEach(item => {
+          item.addEventListener("click", () => {
+            const rank = parseInt(item.dataset.rank);
+            const player = searchCache[rank - 1];
+            if (player) showSearchResultCard(player, rank);
+            searchDropdown.classList.remove("open");
+            searchInput.value = "";
+          });
+        });
+      }, 200);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container")) searchDropdown.classList.remove("open");
+    });
+
+    function showSearchResultCard(p, rank) {
+      const card = document.getElementById("search-result-card");
+      let statsHtml = "";
+
+      if (currentSport === "nba") {
+        statsHtml = `
+          <div class="detail-item"><div class="di-label">GP</div><div class="di-value">${p.gp}</div></div>
+          <div class="detail-item"><div class="di-label">PTS</div><div class="di-value">${p.pts}</div></div>
+          <div class="detail-item"><div class="di-label">REB</div><div class="di-value">${p.reb}</div></div>
+          <div class="detail-item"><div class="di-label">AST</div><div class="di-value">${p.ast}</div></div>
+          <div class="detail-item"><div class="di-label">STL</div><div class="di-value">${p.stl}</div></div>
+          <div class="detail-item"><div class="di-label">BLK</div><div class="di-value">${p.blk}</div></div>
+          <div class="detail-item"><div class="di-label">TO</div><div class="di-value">${p.tov}</div></div>
+          <div class="detail-item"><div class="di-label">FG%</div><div class="di-value">${p.fgPct}%</div></div>
+          <div class="detail-item"><div class="di-label">3P%</div><div class="di-value">${p.tpPct}%</div></div>
+          <div class="detail-item"><div class="di-label">FT%</div><div class="di-value">${p.ftPct}%</div></div>`;
+      } else if (currentSport === "mlb") {
+        if (p.hits != null && p.avg != null) {
+          // Hitter
+          statsHtml = `
+            <div class="detail-item"><div class="di-label">G</div><div class="di-value">${p.games}</div></div>
+            <div class="detail-item"><div class="di-label">H</div><div class="di-value">${p.hits}</div></div>
+            <div class="detail-item"><div class="di-label">HR</div><div class="di-value">${p.hr}</div></div>
+            <div class="detail-item"><div class="di-label">RBI</div><div class="di-value">${p.rbi}</div></div>
+            <div class="detail-item"><div class="di-label">R</div><div class="di-value">${p.runs}</div></div>
+            <div class="detail-item"><div class="di-label">SB</div><div class="di-value">${p.sb}</div></div>
+            <div class="detail-item"><div class="di-label">AVG</div><div class="di-value">${p.avg}</div></div>
+            <div class="detail-item"><div class="di-label">OPS</div><div class="di-value">${p.ops}</div></div>`;
+        } else {
+          // Pitcher
+          statsHtml = `
+            <div class="detail-item"><div class="di-label">W</div><div class="di-value">${p.wins}</div></div>
+            <div class="detail-item"><div class="di-label">L</div><div class="di-value">${p.losses}</div></div>
+            <div class="detail-item"><div class="di-label">ERA</div><div class="di-value">${p.era}</div></div>
+            <div class="detail-item"><div class="di-label">SO</div><div class="di-value">${p.so}</div></div>
+            <div class="detail-item"><div class="di-label">IP</div><div class="di-value">${p.ip}</div></div>
+            <div class="detail-item"><div class="di-label">WHIP</div><div class="di-value">${p.whip}</div></div>
+            <div class="detail-item"><div class="di-label">SV</div><div class="di-value">${p.saves}</div></div>`;
+        }
+      } else if (currentSport === "nfl") {
+        if (p.passYds != null) {
+          statsHtml = `
+            <div class="detail-item"><div class="di-label">G</div><div class="di-value">${p.games}</div></div>
+            <div class="detail-item"><div class="di-label">PASS YDS</div><div class="di-value">${p.passYds}</div></div>
+            <div class="detail-item"><div class="di-label">PASS TD</div><div class="di-value">${p.passTD}</div></div>
+            <div class="detail-item"><div class="di-label">INT</div><div class="di-value">${p.int}</div></div>
+            <div class="detail-item"><div class="di-label">RTG</div><div class="di-value">${p.rating}</div></div>
+            <div class="detail-item"><div class="di-label">RUSH YDS</div><div class="di-value">${p.rushYds}</div></div>`;
+        } else if (p.tackles != null) {
+          statsHtml = `
+            <div class="detail-item"><div class="di-label">G</div><div class="di-value">${p.games}</div></div>
+            <div class="detail-item"><div class="di-label">TACKLES</div><div class="di-value">${p.tackles}</div></div>
+            <div class="detail-item"><div class="di-label">SACKS</div><div class="di-value">${p.sacks}</div></div>
+            <div class="detail-item"><div class="di-label">INT</div><div class="di-value">${p.int}</div></div>
+            <div class="detail-item"><div class="di-label">TFL</div><div class="di-value">${p.tfl}</div></div>
+            <div class="detail-item"><div class="di-label">FF</div><div class="di-value">${p.ff}</div></div>`;
+        } else if (p.fgm != null && p.xpm != null) {
+          statsHtml = `
+            <div class="detail-item"><div class="di-label">G</div><div class="di-value">${p.games}</div></div>
+            <div class="detail-item"><div class="di-label">FGM</div><div class="di-value">${p.fgm}</div></div>
+            <div class="detail-item"><div class="di-label">FGA</div><div class="di-value">${p.fga}</div></div>
+            <div class="detail-item"><div class="di-label">FG%</div><div class="di-value">${p.fgPct}%</div></div>
+            <div class="detail-item"><div class="di-label">XPM</div><div class="di-value">${p.xpm}</div></div>
+            <div class="detail-item"><div class="di-label">PTS</div><div class="di-value">${p.points}</div></div>`;
+        } else {
+          statsHtml = `
+            <div class="detail-item"><div class="di-label">G</div><div class="di-value">${p.games}</div></div>
+            <div class="detail-item"><div class="di-label">RUSH YDS</div><div class="di-value">${p.rushYds}</div></div>
+            <div class="detail-item"><div class="di-label">REC YDS</div><div class="di-value">${p.recYds}</div></div>
+            <div class="detail-item"><div class="di-label">TOT TD</div><div class="di-value">${p.totalTD}</div></div>
+            <div class="detail-item"><div class="di-label">REC</div><div class="di-value">${p.receptions}</div></div>
+            <div class="detail-item"><div class="di-label">FUM</div><div class="di-value">${p.fumbles}</div></div>`;
+        }
+      } else if (currentSport === "nhl") {
+        statsHtml = `
+          <div class="detail-item"><div class="di-label">GP</div><div class="di-value">${p.gp}</div></div>
+          <div class="detail-item"><div class="di-label">G</div><div class="di-value">${p.goals}</div></div>
+          <div class="detail-item"><div class="di-label">A</div><div class="di-value">${p.assists}</div></div>
+          <div class="detail-item"><div class="di-label">PTS</div><div class="di-value">${p.points}</div></div>
+          <div class="detail-item"><div class="di-label">+/-</div><div class="di-value">${p.plusMinus > 0 ? "+" : ""}${p.plusMinus}</div></div>
+          <div class="detail-item"><div class="di-label">PIM</div><div class="di-value">${p.pim}</div></div>`;
+      }
+
+      card.style.display = "block";
+      card.innerHTML = `
+        <button class="src-close" onclick="document.getElementById('search-result-card').style.display='none'">&times;</button>
+        <div class="src-header">
+          ${p.img ? `<img class="src-headshot" src="${p.img}" alt="" onerror="this.style.display='none'">` : ""}
+          <div class="src-info">
+            <div class="src-name">${p.name}</div>
+            <div class="src-team">${p.team || "—"}${p.pos ? " · " + p.pos : ""}</div>
+            <div class="src-rank">#${rank} in EPT Rankings</div>
+          </div>
+          <div class="src-ept">
+            <div class="src-ept-val">${p.ept}</div>
+            <div class="src-ept-label">EPT</div>
+          </div>
+        </div>
+        <div class="detail-grid">${statsHtml}</div>`;
+
+      // Scroll to card
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // ─── Load Current Sport ───
+    async function loadSport() {
+      const contentEl = document.getElementById("content");
+      const weekLabel = document.getElementById("week-label");
+      const updatedEl = document.getElementById("last-updated");
+      const formulaBox = document.querySelector(".formula-box");
+      const headerDesc = document.getElementById("header-desc");
+      const headingEl = document.querySelector(".top25-heading");
+      const posTabs = document.getElementById("position-tabs");
+
+      contentEl.innerHTML = `<div class="loading"><div class="spinner"></div><p>Fetching ${currentSport.toUpperCase()} stats...</p></div>`;
+      searchInput.placeholder = `Search any ${currentSport.toUpperCase()} player...`;
+      document.getElementById("top-player").style.display = "none";
+      document.getElementById("stat-leaders").style.display = "none";
+      document.getElementById("game-of-week").style.display = "none";
+      document.getElementById("search-result-card").style.display = "none";
+      document.getElementById("awards-race").classList.remove("visible");
+      posTabs.classList.remove("visible");
+      posTabs.innerHTML = "";
+      injuryMap = {};
+
+      // Fetch Game of the Week and injuries in background (don't block main data)
+      fetchGameOfTheWeek(currentSport).then(renderGameOfTheWeek).catch(() => {});
+      fetchInjuries(currentSport).then(() => {
+        // Re-render injury badges into already-displayed table
+        document.querySelectorAll(".player-name").forEach(el => {
+          const name = el.childNodes[0]?.textContent?.trim();
+          if (!name) return;
+          const existing = el.querySelector(".injury-badge");
+          if (existing) existing.remove();
+          const badge = injuryBadge(name);
+          if (badge) el.insertAdjacentHTML("beforeend", badge);
+        });
+      }).catch(() => {});
+
+      try {
+        if (currentSport === "nba") {
+          headerDesc.textContent = "The best NBA players, ranked by EPT Rating.";
+          headingEl.textContent = "Top 25 Players";
+          formulaBox.querySelector("h3").textContent = "EPT Rating Formula";
+          formulaBox.querySelector("p").innerHTML = "(PTS &times; 1.5) + (REB &times; 1.5) + (AST &times; 1.5) + (STL &times; 3) + (BLK &times; 3) &minus; (TO &times; 1.5)";
+
+          const data = await fetchNBAStats();
+          if (data.error) throw new Error(data.error);
+          searchCache = data.allPlayers || [];
+          weekLabel.textContent = `${data.season || getNBASeason()} Season`;
+          if (!data.players || !data.players.length) { contentEl.innerHTML = `<div class="error-msg"><p>No games found yet. Check back later!</p></div>`; return; }
+
+          const slEl = document.getElementById("stat-leaders");
+          const cats = [
+            {key:"pts",label:"Most Points"},{key:"reb",label:"Most Rebounds"},{key:"ast",label:"Most Assists"},
+            {key:"blk",label:"Most Blocks"},{key:"stl",label:"Most Steals"},{key:"tov",label:"Most Turnovers"},
+            {key:"fgPct",label:"Highest FG%",suffix:"%",made:"fgm",attempted:"fga"},
+            {key:"ftPct",label:"Highest FT%",suffix:"%",made:"ftm",attempted:"fta"},
+            {key:"tpPct",label:"Highest 3P%",suffix:"%",made:"fg3m",attempted:"fg3a"},
+          ];
+          let slHtml = "";
+          for (const c of cats) {
+            const l = data.players.reduce((b,p) => p[c.key]>b[c.key]?p:b, data.players[0]);
+            const v = c.suffix ? l[c.key]+c.suffix : l[c.key];
+            const f = c.made ? `<div class="sl-sub">${l[c.made]}/${l[c.attempted]}</div>` : "";
+            slHtml += `<div class="stat-leader-card"><div class="sl-category">${c.label}</div><div class="sl-value">${v}</div>${f}<div class="sl-name">${l.name}</div><div class="sl-team">${l.team}</div></div>`;
+          }
+          slEl.innerHTML = slHtml; slEl.style.display = "grid";
+
+          const topEl = document.getElementById("top-player"), top = data.players[0];
+          topEl.style.display = "block";
+          topEl.innerHTML = `<div class="crown">👑</div>${top.img ? `<img class="tp-headshot" src="${top.img}" alt="" onerror="this.style.display='none'">` : ""}<div class="tp-label">#1 Player</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats"><div class="tp-stat"><strong>${top.pts}</strong> PTS</div><div class="tp-stat"><strong>${top.reb}</strong> REB</div><div class="tp-stat"><strong>${top.ast}</strong> AST</div><div class="tp-stat"><strong>${top.stl}</strong> STL</div><div class="tp-stat"><strong>${top.blk}</strong> BLK</div></div>`;
+
+          contentEl.innerHTML = renderNBATable(data.players);
+          currentPlayers = data.players;
+          setupSortHeaders();
+          renderAwardsRace("nba", data);
+          updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
+
+        } else if (currentSport === "mlb") {
+          headerDesc.textContent = "The best MLB players, ranked by EPT Rating.";
+          updateMLBFormula("hitting");
+
+          const data = await fetchMLBStats();
+          if (data.error) throw new Error(data.error);
+          mlbCache = data;
+          searchCache = [...(data.allHitters || []), ...(data.allPitchers || [])];
+          searchCache.sort((a, b) => b.ept - a.ept);
+          weekLabel.textContent = `${data.season} Season`;
+
+          // Build Hitting / Pitchers tabs
+          posTabs.innerHTML = `<span class="pos-tab active" data-pos="hitting" onclick="switchMLBTab('hitting')">Hitting</span><span class="pos-tab" data-pos="pitching" onclick="switchMLBTab('pitching')">Pitchers</span>`;
+          posTabs.classList.add("visible");
+
+          renderMLBFromCache();
+          updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
+          return; // renderMLBFromCache handles expand handlers
+
+        } else if (currentSport === "nfl") {
+          headerDesc.textContent = "The best NFL players, ranked by EPT Rating per position.";
+          updateNFLFormula("qb");
+
+          const data = await fetchNFLStats();
+          nflCache = data;
+          searchCache = data.allPlayers || [];
+          weekLabel.textContent = `${data.season} Season`;
+
+          // Build position tabs
+          let tabsHtml = "";
+          let first = true;
+          for (const [key, cfg] of Object.entries(NFL_POS_GROUPS)) {
+            tabsHtml += `<span class="pos-tab${first ? ' active' : ''}" data-pos="${key}" onclick="switchNFLPos('${key}')">${cfg.label}</span>`;
+            first = false;
+          }
+          posTabs.innerHTML = tabsHtml;
+          posTabs.classList.add("visible");
+
+          renderNFLFromCache();
+          updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
+          return; // renderNFLFromCache handles expand handlers
+
+        } else if (currentSport === "nhl") {
+          headerDesc.textContent = "The best NHL players, ranked by EPT Rating.";
+          headingEl.textContent = "Top 25 NHL Players";
+          formulaBox.querySelector("h3").textContent = "NHL EPT Formula";
+          formulaBox.querySelector("p").innerHTML = "(G &times; 3) + (A &times; 2) + (+/- &times; 0.5) &minus; (PIM &times; 0.3)";
+
+          const data = await fetchNHLStats();
+          nhlCache = data;
+          searchCache = data.allPlayers || [];
+          weekLabel.textContent = `${data.season} Season`;
+          if (!data.players || !data.players.length) { contentEl.innerHTML = `<div class="error-msg"><p>No games found yet. Check back later!</p></div>`; return; }
+
+          // Stat leaders
+          const slEl = document.getElementById("stat-leaders");
+          const cats = [
+            {key:"goals",label:"Most Goals"},{key:"assists",label:"Most Assists"},{key:"points",label:"Most Points"},
+          ];
+          let slHtml = "";
+          for (const c of cats) {
+            const l = data.players.reduce((b,p) => p[c.key]>b[c.key]?p:b, data.players[0]);
+            slHtml += `<div class="stat-leader-card"><div class="sl-category">${c.label}</div><div class="sl-value">${l[c.key]}</div><div class="sl-name">${l.name}</div><div class="sl-team">${l.team}</div></div>`;
+          }
+          slEl.innerHTML = slHtml; slEl.style.display = "grid";
+
+          // Top player card
+          const topEl = document.getElementById("top-player"), top = data.players[0];
+          topEl.style.display = "block";
+          topEl.innerHTML = `<div class="crown">👑</div>${top.img ? `<img class="tp-headshot" src="${top.img}" alt="" onerror="this.style.display='none'">` : ""}<div class="tp-label">#1 Player</div><div class="tp-name">${top.name}</div><div class="tp-team">${top.team} &middot; ${top.pos}</div><div class="tp-ept">${top.ept} <span>EPT</span></div><div class="tp-stats"><div class="tp-stat"><strong>${top.goals}</strong> G</div><div class="tp-stat"><strong>${top.assists}</strong> A</div><div class="tp-stat"><strong>${top.points}</strong> PTS</div><div class="tp-stat"><strong>${top.plusMinus > 0 ? '+' : ''}${top.plusMinus}</strong> +/-</div></div>`;
+
+          contentEl.innerHTML = renderNHLTable(data.players);
+          currentPlayers = data.players;
+          setupSortHeaders();
+          renderAwardsRace("nhl", data);
+          updatedEl.textContent = `Last updated: ${new Date(data.updatedAt).toLocaleString()}`;
+        }
+
+        // Click-to-expand handlers (NBA/MLB/NHL)
+        contentEl.querySelectorAll(".player-row").forEach(row => {
+          row.addEventListener("click", () => {
+            const detail = contentEl.querySelector(`.detail-row[data-index="${row.dataset.index}"]`);
+            detail.classList.toggle("open");
+          });
+        });
+
+      } catch (err) {
+        console.error(err);
+        contentEl.innerHTML = `<div class="error-msg"><p>Could not load stats. Please try again.</p><p style="font-size:0.8rem; margin-top:8px;">${err.message}</p><button onclick="loadSport()">Try Again</button></div>`;
+      }
+    }
+
+    loadSport();
+    setInterval(loadSport, 5 * 60 * 1000);
+  </script>
+
+</body>
+</html>
